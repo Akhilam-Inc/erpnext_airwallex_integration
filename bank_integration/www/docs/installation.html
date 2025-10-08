@@ -1,136 +1,92 @@
-{% extends "templates/web.html" %}
+{% extends "templates/docs_page.html" %}
 
 {% block title %}Installation - Bank Integration Documentation{% endblock %}
 
-{% block head_include %}
-<link rel="stylesheet" href="/assets/bank_integration/css/docs.css">
-{% endblock %}
+{% block page_title %}Installation Guide{% endblock %}
+{% block page_subtitle %}Step-by-step installation instructions{% endblock %}
 
-{% block content %}
-<div class="docs-container">
-    <div class="docs-header">
-        <div class="container">
-            <h1 class="docs-title">Installation Guide</h1>
-            <p class="docs-subtitle">Step-by-step installation instructions</p>
-        </div>
-    </div>
+{% block page_content %}
+<h1>Installation</h1>
 
-    <div class="container">
-        <div class="row">
-            <div class="col-md-3">
-                <div class="docs-sidebar">
-                    <nav class="docs-nav">
-                        <h5>Getting Started</h5>
-                        <ul>
-                            <li><a href="/docs/installation" class="active">Installation</a></li>
-                            <li><a href="/docs/setup">Setup & Configuration</a></li>
-                            <li><a href="/docs/authentication">Authentication</a></li>
-                        </ul>
+<div class="alert alert-info">
+    <strong>Prerequisites:</strong> Make sure you have a working ERPNext installation with Frappe Framework v14 or higher.
+</div>
 
-                        <h5>User Guide</h5>
-                        <ul>
-                            <li><a href="/docs/user-guide">User Guide</a></li>
-                            <li><a href="/docs/transaction-sync">Transaction Sync</a></li>
-                            <li><a href="/docs/bank-accounts">Bank Account Mapping</a></li>
-                        </ul>
+<h2>Method 1: Install from Git Repository</h2>
 
-                        <h5>Developer Guide</h5>
-                        <ul>
-                            <li><a href="/docs/api-reference">API Reference</a></li>
-                            <li><a href="/docs/development">Development</a></li>
-                        </ul>
-                    </nav>
-                </div>
-            </div>
+<h3>1. Get the App</h3>
+<pre><code>cd /path/to/your/frappe-bench
+bench get-app https://github.com/Akhilam-Inc/erpnext_airwallex_integration.git</code></pre>
 
-            <div class="col-md-9">
-                <div class="docs-content">
-                    <h1>Installation</h1>
+<h3>2. Install on Site</h3>
+<pre><code>bench --site your-site-name install-app erpnext_airwallex_integration</code></pre>
 
-                    <div class="alert alert-info">
-                        <strong>Prerequisites:</strong> Make sure you have a working ERPNext installation with Frappe Framework v14 or higher.
-                    </div>
+<h3>3. Restart Services</h3>
+<pre><code>bench restart</code></pre>
 
-                    <h2>Method 1: Install from Git Repository</h2>
+<h2>Method 2: Development Installation</h2>
 
-                    <h3>1. Get the App</h3>
-                    <pre><code>cd /path/to/your/frappe-bench
-bench get-app https://github.com/your-username/bank_integration.git</code></pre>
+<h3>1. Clone Repository</h3>
+<pre><code>cd /path/to/your/frappe-bench/apps
+git clone https://github.com/Akhilam-Inc/erpnext_airwallex_integration.git</code></pre>
 
-                    <h3>2. Install on Site</h3>
-                    <pre><code>bench --site your-site-name install-app bank_integration</code></pre>
+<h3>2. Install in Development Mode</h3>
+<pre><code>cd /path/to/your/frappe-bench
+bench --site your-site-name install-app erpnext_airwallex_integration --force</code></pre>
 
-                    <h3>3. Restart Services</h3>
-                    <pre><code>bench restart</code></pre>
-
-                    <h2>Method 2: Development Installation</h2>
-
-                    <h3>1. Clone Repository</h3>
-                    <pre><code>cd /path/to/your/frappe-bench/apps
-git clone https://github.com/your-username/bank_integration.git</code></pre>
-
-                    <h3>2. Install in Development Mode</h3>
-                    <pre><code>cd /path/to/your/frappe-bench
-bench --site your-site-name install-app bank_integration --force</code></pre>
-
-                    <h3>3. Enable Developer Mode</h3>
-                    <pre><code>bench --site your-site-name set-config developer_mode 1
+<h3>3. Enable Developer Mode</h3>
+<pre><code>bench --site your-site-name set-config developer_mode 1
 bench restart</code></pre>
 
-                    <h2>Verification</h2>
+<h2>Verification</h2>
 
-                    <p>To verify the installation was successful:</p>
+<p>To verify the installation was successful:</p>
 
-                    <ol>
-                        <li>Login to your ERPNext site</li>
-                        <li>Navigate to <strong>Setup > Bank Integration Setting</strong></li>
-                        <li>You should see the Bank Integration Setting form</li>
-                    </ol>
+<ol>
+    <li>Login to your ERPNext site</li>
+    <li>Navigate to <strong>Setup > Bank Integration Setting</strong></li>
+    <li>You should see the Bank Integration Setting form</li>
+</ol>
 
-                    <div class="alert alert-success">
-                        <strong>Success!</strong> The Bank Integration app is now installed and ready for configuration.
-                    </div>
+<div class="alert alert-success">
+    <strong>Success!</strong> The Bank Integration app is now installed and ready for configuration.
+</div>
 
-                    <h2>System Requirements</h2>
+<h2>System Requirements</h2>
 
-                    <ul>
-                        <li><strong>ERPNext:</strong> v14.0.0 or higher</li>
-                        <li><strong>Frappe Framework:</strong> v14.0.0 or higher</li>
-                        <li><strong>Python:</strong> 3.8 or higher</li>
-                        <li><strong>Redis:</strong> Required for caching and background jobs</li>
-                        <li><strong>Internet Connection:</strong> Required for Airwallex API access</li>
-                    </ul>
+<ul>
+    <li><strong>ERPNext:</strong> v14.0.0 or higher</li>
+    <li><strong>Frappe Framework:</strong> v14.0.0 or higher</li>
+    <li><strong>Python:</strong> 3.8 or higher</li>
+    <li><strong>Redis:</strong> Required for caching and background jobs</li>
+    <li><strong>Internet Connection:</strong> Required for Airwallex API access</li>
+</ul>
 
-                    <h2>Troubleshooting Installation</h2>
+<h2>Troubleshooting Installation</h2>
 
-                    <h3>Common Issues</h3>
+<h3>Common Issues</h3>
 
-                    <h4>App Not Found</h4>
-                    <div class="alert alert-warning">
-                        If you get an "app not found" error, make sure the app is properly added to your bench:
-                        <pre><code>bench list-apps</code></pre>
-                    </div>
+<h4>App Not Found</h4>
+<div class="alert alert-warning">
+    If you get an "app not found" error, make sure the app is properly added to your bench:
+    <pre><code>bench list-apps</code></pre>
+</div>
 
-                    <h4>Permission Errors</h4>
-                    <div class="alert alert-warning">
-                        If you encounter permission errors during installation:
-                        <pre><code>sudo chown -R $(whoami) /path/to/your/frappe-bench
+<h4>Permission Errors</h4>
+<div class="alert alert-warning">
+    If you encounter permission errors during installation:
+    <pre><code>sudo chown -R $(whoami) /path/to/your/frappe-bench
 bench setup requirements</code></pre>
-                    </div>
+</div>
 
-                    <h4>Database Migration Issues</h4>
-                    <div class="alert alert-warning">
-                        If migrations fail during installation:
-                        <pre><code>bench --site your-site-name migrate
+<h4>Database Migration Issues</h4>
+<div class="alert alert-warning">
+    If migrations fail during installation:
+    <pre><code>bench --site your-site-name migrate
 bench restart</code></pre>
-                    </div>
+</div>
 
-                    <div style="margin-top: 40px; text-align: center;">
-                        <a href="/docs/setup" class="btn btn-primary">Next: Setup & Configuration →</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+<div style="margin-top: 40px; text-align: center;">
+    <a href="/docs/setup" class="btn btn-primary">Next: Setup & Configuration →</a>
 </div>
 {% endblock %}

@@ -1,200 +1,158 @@
-{% extends "templates/web.html" %}
+{% extends "templates/docs_page.html" %}
 
 {% block title %}Authentication - Bank Integration Documentation{% endblock %}
 
-{% block head_include %}
-<link rel="stylesheet" href="/assets/bank_integration/css/docs.css">
-{% endblock %}
+{% block page_title %}Authentication Guide{% endblock %}
+{% block page_subtitle %}Setting up Airwallex API authentication{% endblock %}
 
-{% block content %}
-<div class="docs-container">
-    <div class="docs-header">
-        <div class="container">
-            <h1 class="docs-title">Authentication Guide</h1>
-            <p class="docs-subtitle">Setting up Airwallex API authentication</p>
-        </div>
-    </div>
+{% block page_content %}
+<h1>Authentication Guide</h1>
 
-    <div class="container">
-        <div class="row">
-            <div class="col-md-3">
-                <div class="docs-sidebar">
-                    <nav class="docs-nav">
-                        <h5>Getting Started</h5>
-                        <ul>
-                            <li><a href="/docs/installation">Installation</a></li>
-                            <li><a href="/docs/setup">Setup & Configuration</a></li>
-                            <li><a href="/docs/authentication" class="active">Authentication</a></li>
-                        </ul>
+<p>This guide explains how to set up authentication with the Airwallex API for your bank integration.</p>
 
-                        <h5>User Guide</h5>
-                        <ul>
-                            <li><a href="/docs/user-guide">User Guide</a></li>
-                            <li><a href="/docs/transaction-sync">Transaction Sync</a></li>
-                            <li><a href="/docs/bank-accounts">Bank Account Mapping</a></li>
-                            <li><a href="/docs/troubleshooting">Troubleshooting</a></li>
-                        </ul>
+<h2>Getting Airwallex API Credentials</h2>
 
-                        <h5>Developer Guide</h5>
-                        <ul>
-                            <li><a href="/docs/api-reference">API Reference</a></li>
-                            <li><a href="/docs/customization">Customization</a></li>
-                            <li><a href="/docs/development">Development</a></li>
-                            <li><a href="/docs/contributing">Contributing</a></li>
-                        </ul>
-                    </nav>
-                </div>
-            </div>
+<h3>1. Create an Airwallex Account</h3>
+<ol>
+    <li>Visit <a href="https://www.airwallex.com" target="_blank">airwallex.com</a></li>
+    <li>Sign up for a business account</li>
+    <li>Complete the verification process</li>
+    <li>Access your Airwallex dashboard</li>
+</ol>
 
-            <div class="col-md-9">
-                <div class="docs-content">
-                    <h1>Authentication Guide</h1>
+<h3>2. Access Developer Portal</h3>
+<ol>
+    <li>Login to your Airwallex account</li>
+    <li>Navigate to <strong>Settings → Developer</strong></li>
+    <li>Or visit <a href="https://developer.airwallex.com" target="_blank">developer.airwallex.com</a></li>
+</ol>
 
-                    <p>This guide explains how to set up authentication with the Airwallex API for your bank integration.</p>
+<h3>3. Create API Application</h3>
+<ol>
+    <li>Click <strong>"Create Application"</strong></li>
+    <li>Enter application details:
+        <ul>
+            <li><strong>Name:</strong> ERPNext Bank Integration</li>
+            <li><strong>Description:</strong> Integration for syncing bank transactions</li>
+            <li><strong>Environment:</strong> Choose Demo or Production</li>
+        </ul>
+    </li>
+    <li>Select required scopes/permissions</li>
+    <li>Submit the application</li>
+</ol>
 
-                    <h2>Getting Airwallex API Credentials</h2>
+<h2>Required API Permissions</h2>
 
-                    <h3>1. Create an Airwallex Account</h3>
-                    <ol>
-                        <li>Visit <a href="https://www.airwallex.com" target="_blank">airwallex.com</a></li>
-                        <li>Sign up for a business account</li>
-                        <li>Complete the verification process</li>
-                        <li>Access your Airwallex dashboard</li>
-                    </ol>
+<p>Your Airwallex application needs the following permissions:</p>
 
-                    <h3>2. Access Developer Portal</h3>
-                    <ol>
-                        <li>Login to your Airwallex account</li>
-                        <li>Navigate to <strong>Settings → Developer</strong></li>
-                        <li>Or visit <a href="https://developer.airwallex.com" target="_blank">developer.airwallex.com</a></li>
-                    </ol>
+<div class="alert alert-info">
+    <h4>Financial Transactions</h4>
+    <ul>
+        <li>✅ <strong>Read financial transactions</strong> - To fetch transaction data</li>
+        <li>✅ <strong>List financial transactions</strong> - To get transaction lists</li>
+    </ul>
 
-                    <h3>3. Create API Application</h3>
-                    <ol>
-                        <li>Click <strong>"Create Application"</strong></li>
-                        <li>Enter application details:
-                            <ul>
-                                <li><strong>Name:</strong> ERPNext Bank Integration</li>
-                                <li><strong>Description:</strong> Integration for syncing bank transactions</li>
-                                <li><strong>Environment:</strong> Choose Demo or Production</li>
-                            </ul>
-                        </li>
-                        <li>Select required scopes/permissions</li>
-                        <li>Submit the application</li>
-                    </ol>
+    <h4>Account Information</h4>
+    <ul>
+        <li>✅ <strong>Read account balance</strong> - To sync account balances</li>
+        <li>✅ <strong>Read account details</strong> - To get account information</li>
+    </ul>
+</div>
 
-                    <h2>Required API Permissions</h2>
+<h2>Retrieving Credentials</h2>
 
-                    <p>Your Airwallex application needs the following permissions:</p>
+<h3>Client ID and API Key</h3>
+<p>After creating your application, you'll receive:</p>
 
-                    <div class="alert alert-info">
-                        <h4>Financial Transactions</h4>
-                        <ul>
-                            <li>✅ <strong>Read financial transactions</strong> - To fetch transaction data</li>
-                            <li>✅ <strong>List financial transactions</strong> - To get transaction lists</li>
-                        </ul>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Credential</th>
+            <th>Description</th>
+            <th>Format</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><strong>Client ID</strong></td>
+            <td>Public identifier for your application</td>
+            <td><code>app_abc123def456</code></td>
+        </tr>
+        <tr>
+            <td><strong>API Key</strong></td>
+            <td>Secret key for authentication (keep secure!)</td>
+            <td><code>sk_live_abc123def456...</code></td>
+        </tr>
+    </tbody>
+</table>
 
-                        <h4>Account Information</h4>
-                        <ul>
-                            <li>✅ <strong>Read account balance</strong> - To sync account balances</li>
-                            <li>✅ <strong>Read account details</strong> - To get account information</li>
-                        </ul>
-                    </div>
+<div class="alert alert-warning">
+    <strong>Security Warning:</strong> Never share your API Key publicly or commit it to version control. Store it securely in your ERPNext system.
+</div>
 
-                    <h2>Retrieving Credentials</h2>
+<h2>API Endpoints</h2>
 
-                    <h3>Client ID and API Key</h3>
-                    <p>After creating your application, you'll receive:</p>
+<h3>Environment URLs</h3>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Environment</th>
+            <th>Base URL</th>
+            <th>Usage</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><strong>Demo</strong></td>
+            <td><code>https://api-demo.airwallex.com</code></td>
+            <td>Testing and development</td>
+        </tr>
+        <tr>
+            <td><strong>Production</strong></td>
+            <td><code>https://api.airwallex.com</code></td>
+            <td>Live transactions</td>
+        </tr>
+    </tbody>
+</table>
 
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th>Credential</th>
-                                <th>Description</th>
-                                <th>Format</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><strong>Client ID</strong></td>
-                                <td>Public identifier for your application</td>
-                                <td><code>app_abc123def456</code></td>
-                            </tr>
-                            <tr>
-                                <td><strong>API Key</strong></td>
-                                <td>Secret key for authentication (keep secure!)</td>
-                                <td><code>sk_live_abc123def456...</code></td>
-                            </tr>
-                        </tbody>
-                    </table>
+<h2>Configuring Authentication in ERPNext</h2>
 
-                    <div class="alert alert-warning">
-                        <strong>Security Warning:</strong> Never share your API Key publicly or commit it to version control. Store it securely in your ERPNext system.
-                    </div>
+<h3>1. Navigate to Settings</h3>
+<ol>
+    <li>Login to your ERPNext site</li>
+    <li>Go to <strong>Setup → Bank Integration Setting</strong></li>
+</ol>
 
-                    <h2>API Endpoints</h2>
+<h3>2. Enter Credentials</h3>
+<ol>
+    <li>Check <strong>"Enable Airwallex"</strong></li>
+    <li>Enter your <strong>Client ID</strong></li>
+    <li>Enter your <strong>API Key</strong> (will be encrypted)</li>
+    <li>Set the <strong>API URL</strong> based on your environment</li>
+</ol>
 
-                    <h3>Environment URLs</h3>
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th>Environment</th>
-                                <th>Base URL</th>
-                                <th>Usage</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><strong>Demo</strong></td>
-                                <td><code>https://api-demo.airwallex.com</code></td>
-                                <td>Testing and development</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Production</strong></td>
-                                <td><code>https://api.airwallex.com</code></td>
-                                <td>Live transactions</td>
-                            </tr>
-                        </tbody>
-                    </table>
+<h3>3. Test Authentication</h3>
+<ol>
+    <li>Click <strong>"Test Authentication"</strong> button</li>
+    <li>Wait for the response</li>
+    <li>Verify you see a success message</li>
+</ol>
 
-                    <h2>Configuring Authentication in ERPNext</h2>
+<h2>Authentication Flow</h2>
 
-                    <h3>1. Navigate to Settings</h3>
-                    <ol>
-                        <li>Login to your ERPNext site</li>
-                        <li>Go to <strong>Setup → Bank Integration Setting</strong></li>
-                    </ol>
+<h3>How It Works</h3>
+<p>The bank integration uses OAuth 2.0 client credentials flow:</p>
 
-                    <h3>2. Enter Credentials</h3>
-                    <ol>
-                        <li>Check <strong>"Enable Airwallex"</strong></li>
-                        <li>Enter your <strong>Client ID</strong></li>
-                        <li>Enter your <strong>API Key</strong> (will be encrypted)</li>
-                        <li>Set the <strong>API URL</strong> based on your environment</li>
-                    </ol>
+<ol>
+    <li><strong>Request Token:</strong> App sends Client ID and API Key to Airwallex</li>
+    <li><strong>Receive Token:</strong> Airwallex returns a Bearer token</li>
+    <li><strong>Cache Token:</strong> Token is cached in Redis for 1 hour</li>
+    <li><strong>Use Token:</strong> All API requests include the Bearer token</li>
+    <li><strong>Auto Refresh:</strong> Token is automatically refreshed when needed</li>
+</ol>
 
-                    <h3>3. Test Authentication</h3>
-                    <ol>
-                        <li>Click <strong>"Test Authentication"</strong> button</li>
-                        <li>Wait for the response</li>
-                        <li>Verify you see a success message</li>
-                    </ol>
-
-                    <h2>Authentication Flow</h2>
-
-                    <h3>How It Works</h3>
-                    <p>The bank integration uses OAuth 2.0 client credentials flow:</p>
-
-                    <ol>
-                        <li><strong>Request Token:</strong> App sends Client ID and API Key to Airwallex</li>
-                        <li><strong>Receive Token:</strong> Airwallex returns a Bearer token</li>
-                        <li><strong>Cache Token:</strong> Token is cached in Redis for 1 hour</li>
-                        <li><strong>Use Token:</strong> All API requests include the Bearer token</li>
-                        <li><strong>Auto Refresh:</strong> Token is automatically refreshed when needed</li>
-                    </ol>
-
-                    <h3>Token Management</h3>
-                    <pre><code>POST /api/v1/authentication/login
+<h3>Token Management</h3>
+<pre><code>POST /api/v1/authentication/login
 Content-Type: application/json
 
 {
@@ -208,109 +166,94 @@ Response:
   "expires_at": "2025-10-08T15:30:00Z"
 }</code></pre>
 
-                    <h2>Troubleshooting Authentication</h2>
+<h2>Troubleshooting Authentication</h2>
 
-                    <h3>Common Issues</h3>
+<h3>Common Issues</h3>
 
-                    <h4>401 Unauthorized</h4>
-                    <div class="alert alert-warning">
-                        <strong>Cause:</strong> Invalid Client ID or API Key
-                        <br><strong>Solution:</strong>
-                        <ul>
-                            <li>Verify credentials in Airwallex developer portal</li>
-                            <li>Check for typos in Client ID and API Key</li>
-                            <li>Ensure you're using the correct environment (demo vs production)</li>
-                        </ul>
-                    </div>
+<h4>401 Unauthorized</h4>
+<div class="alert alert-warning">
+    <strong>Cause:</strong> Invalid Client ID or API Key
+    <br><strong>Solution:</strong>
+    <ul>
+        <li>Verify credentials in Airwallex developer portal</li>
+        <li>Check for typos in Client ID and API Key</li>
+        <li>Ensure you're using the correct environment (demo vs production)</li>
+    </ul>
+</div>
 
-                    <h4>403 Forbidden</h4>
-                    <div class="alert alert-warning">
-                        <strong>Cause:</strong> Insufficient permissions
-                        <br><strong>Solution:</strong>
-                        <ul>
-                            <li>Check your application permissions in Airwallex</li>
-                            <li>Ensure financial transactions scope is enabled</li>
-                            <li>Contact Airwallex support if permissions are missing</li>
-                        </ul>
-                    </div>
+<h4>403 Forbidden</h4>
+<div class="alert alert-warning">
+    <strong>Cause:</strong> Insufficient permissions
+    <br><strong>Solution:</strong>
+    <ul>
+        <li>Check your application permissions in Airwallex</li>
+        <li>Ensure financial transactions scope is enabled</li>
+        <li>Contact Airwallex support if permissions are missing</li>
+    </ul>
+</div>
 
-                    <h4>Connection Timeout</h4>
-                    <div class="alert alert-warning">
-                        <strong>Cause:</strong> Network connectivity issues
-                        <br><strong>Solution:</strong>
-                        <ul>
-                            <li>Check internet connection</li>
-                            <li>Verify firewall settings allow HTTPS outbound connections</li>
-                            <li>Test API URL in browser or curl</li>
-                        </ul>
-                    </div>
+<h4>Connection Timeout</h4>
+<div class="alert alert-warning">
+    <strong>Cause:</strong> Network connectivity issues
+    <br><strong>Solution:</strong>
+    <ul>
+        <li>Check internet connection</li>
+        <li>Verify firewall settings allow HTTPS outbound connections</li>
+        <li>Test API URL in browser or curl</li>
+    </ul>
+</div>
 
-                    <h4>SSL/TLS Errors</h4>
-                    <div class="alert alert-warning">
-                        <strong>Cause:</strong> SSL certificate issues
-                        <br><strong>Solution:</strong>
-                        <ul>
-                            <li>Update CA certificates on your server</li>
-                            <li>Check system time is correct</li>
-                            <li>Verify Python requests library is updated</li>
-                        </ul>
-                    </div>
+<h4>SSL/TLS Errors</h4>
+<div class="alert alert-warning">
+    <strong>Cause:</strong> SSL certificate issues
+    <br><strong>Solution:</strong>
+    <ul>
+        <li>Update CA certificates on your server</li>
+        <li>Check system time is correct</li>
+        <li>Verify Python requests library is updated</li>
+    </ul>
+</div>
 
-                    <h2>Security Best Practices</h2>
+<h2>Security Best Practices</h2>
 
-                    <h3>API Key Security</h3>
-                    <ul>
-                        <li>🔒 <strong>Never hardcode</strong> API keys in source code</li>
-                        <li>🔒 <strong>Use environment variables</strong> or secure storage</li>
-                        <li>🔒 <strong>Rotate keys regularly</strong> (recommended: every 90 days)</li>
-                        <li>🔒 <strong>Monitor usage</strong> for unexpected activity</li>
-                        <li>🔒 <strong>Revoke immediately</strong> if compromised</li>
-                    </ul>
+<h3>API Key Security</h3>
+<ul>
+    <li>🔒 <strong>Never hardcode</strong> API keys in source code</li>
+    <li>🔒 <strong>Use environment variables</strong> or secure storage</li>
+    <li>🔒 <strong>Rotate keys regularly</strong> (recommended: every 90 days)</li>
+    <li>🔒 <strong>Monitor usage</strong> for unexpected activity</li>
+    <li>🔒 <strong>Revoke immediately</strong> if compromised</li>
+</ul>
 
-                    <h3>Network Security</h3>
-                    <ul>
-                        <li>🛡️ <strong>Use HTTPS only</strong> for all API communications</li>
-                        <li>🛡️ <strong>Implement rate limiting</strong> to prevent abuse</li>
-                        <li>🛡️ <strong>Log authentication attempts</strong> for monitoring</li>
-                        <li>🛡️ <strong>Use IP whitelisting</strong> if supported</li>
-                    </ul>
+<h3>Network Security</h3>
+<ul>
+    <li>🛡️ <strong>Use HTTPS only</strong> for all API communications</li>
+    <li>🛡️ <strong>Implement rate limiting</strong> to prevent abuse</li>
+    <li>🛡️ <strong>Log authentication attempts</strong> for monitoring</li>
+    <li>🛡️ <strong>Use IP whitelisting</strong> if supported</li>
+</ul>
 
-                    <h2>Testing Your Setup</h2>
+<h2>Testing Your Setup</h2>
 
-                    <h3>Manual Test</h3>
-                    <p>You can test authentication manually using curl:</p>
+<h3>Manual Test</h3>
+<p>You can test authentication manually using curl:</p>
 
-                    <pre><code>curl -X POST https://api-demo.airwallex.com/api/v1/authentication/login \
+<pre><code>curl -X POST https://api-demo.airwallex.com/api/v1/authentication/login \
   -H "Content-Type: application/json" \
   -H "x-client-id: your-client-id" \
   -H "x-api-key: your-api-key"</code></pre>
 
-                    <h3>Expected Response</h3>
-                    <pre><code>{
+<h3>Expected Response</h3>
+<pre><code>{
   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
   "expires_at": "2025-10-08T15:30:00.000Z"
 }</code></pre>
 
-                    <div class="alert alert-success">
-                        <strong>Success!</strong> If you receive a token, your authentication is working correctly.
-                    </div>
+<div class="alert alert-success">
+    <strong>Success!</strong> If you receive a token, your authentication is working correctly.
+</div>
 
-                    <h2>Next Steps</h2>
-
-                    <p>After successful authentication setup:</p>
-                    <ol>
-                        <li>Configure bank account mappings</li>
-                        <li>Set up your sync schedule</li>
-                        <li>Run your first transaction sync</li>
-                        <li>Monitor logs for any issues</li>
-                    </ol>
-
-                    <div style="margin-top: 40px; text-align: center;">
-                        <a href="/docs/user-guide" class="btn btn-primary">Next: User Guide →</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+<div style="margin-top: 40px; text-align: center;">
+    <a href="/docs/user-guide" class="btn btn-primary">Next: User Guide →</a>
 </div>
 {% endblock %}

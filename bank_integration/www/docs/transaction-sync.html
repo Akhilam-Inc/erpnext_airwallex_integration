@@ -1,296 +1,184 @@
-{% extends "templates/web.html" %}
+{% extends "templates/docs_page.html" %}
 
 {% block title %}Transaction Sync - Bank Integration Documentation{% endblock %}
 
-{% block head_include %}
-<link rel="stylesheet" href="/assets/bank_integration/css/docs.css">
-{% endblock %}
+{% block page_title %}Transaction Sync{% endblock %}
+{% block page_subtitle %}Detailed guide on syncing bank transactions{% endblock %}
 
-{% block content %}
-<div class="docs-container">
-    <div class="docs-header">
-        <div class="container">
-            <h1 class="docs-title">Transaction Sync</h1>
-            <p class="docs-subtitle">Detailed guide on syncing bank transactions</p>
-        </div>
-    </div>
+{% block page_content %}
+<h1>Transaction Sync</h1>
 
-    <div class="container">
-        <div class="row">
-            <div class="col-md-3">
-                <div class="docs-sidebar">
-                    <nav class="docs-nav">
-                        <h5>Getting Started</h5>
-                        <ul>
-                            <li><a href="/docs/installation">Installation</a></li>
-                            <li><a href="/docs/setup">Setup & Configuration</a></li>
-                            <li><a href="/docs/authentication">Authentication</a></li>
-                        </ul>
+<p>Learn how to sync transactions between Airwallex and ERPNext efficiently and reliably.</p>
 
-                        <h5>User Guide</h5>
-                        <ul>
-                            <li><a href="/docs/user-guide">User Guide</a></li>
-                            <li><a href="/docs/transaction-sync" class="active">Transaction Sync</a></li>
-                            <li><a href="/docs/bank-accounts">Bank Account Mapping</a></li>
-                            <li><a href="/docs/troubleshooting">Troubleshooting</a></li>
-                        </ul>
+<h2>Sync Types</h2>
 
-                        <h5>Developer Guide</h5>
-                        <ul>
-                            <li><a href="/docs/api-reference">API Reference</a></li>
-                            <li><a href="/docs/development">Development</a></li>
-                        </ul>
-                    </nav>
-                </div>
-            </div>
+<h3>Manual Sync</h3>
+<p>On-demand synchronization for specific date ranges.</p>
+<ul>
+    <li>✅ Control exact date range</li>
+    <li>✅ Real-time progress monitoring</li>
+    <li>✅ Immediate results</li>
+    <li>⚠️ Requires manual intervention</li>
+</ul>
 
-            <div class="col-md-9">
-                <div class="docs-content">
-                    <h1>Transaction Sync</h1>
+<h3>Scheduled Sync</h3>
+<p>Automatic synchronization based on configured schedule.</p>
+<ul>
+    <li>✅ Fully automated</li>
+    <li>✅ Consistent data updates</li>
+    <li>✅ Reduced manual work</li>
+    <li>⚠️ Fixed date ranges per schedule</li>
+</ul>
 
-                    <p>Learn how to sync transactions between Airwallex and ERPNext efficiently and reliably.</p>
+<h2>Sync Process Flow</h2>
 
-                    <h2>Sync Types</h2>
+<div class="feature-highlight">
+    <h3>Step-by-Step Process</h3>
+    <ol>
+        <li><strong>Initialize:</strong> Validate settings and authenticate with Airwallex</li>
+        <li><strong>Fetch:</strong> Retrieve transactions from Airwallex API</li>
+        <li><strong>Filter:</strong> Check for existing transactions to avoid duplicates</li>
+        <li><strong>Map:</strong> Convert Airwallex data to ERPNext format</li>
+        <li><strong>Create:</strong> Insert new Bank Transaction records</li>
+        <li><strong>Progress:</strong> Update sync progress in real-time</li>
+        <li><strong>Complete:</strong> Finalize sync and update status</li>
+    </ol>
+</div>
 
-                    <h3>Manual Sync</h3>
-                    <p>On-demand synchronization for specific date ranges.</p>
-                    <ul>
-                        <li>✅ Control exact date range</li>
-                        <li>✅ Real-time progress monitoring</li>
-                        <li>✅ Immediate results</li>
-                        <li>⚠️ Requires manual intervention</li>
-                    </ul>
+<h2>Transaction Mapping</h2>
 
-                    <h3>Scheduled Sync</h3>
-                    <p>Automatic synchronization based on configured schedule.</p>
-                    <ul>
-                        <li>✅ Fully automated</li>
-                        <li>✅ Consistent data updates</li>
-                        <li>✅ Reduced manual work</li>
-                        <li>⚠️ Fixed date ranges per schedule</li>
-                    </ul>
+<h3>Data Mapping</h3>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Airwallex Field</th>
+            <th>ERPNext Field</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>id</td>
+            <td>reference_number</td>
+            <td>Unique transaction identifier</td>
+        </tr>
+        <tr>
+            <td>settled_at</td>
+            <td>date</td>
+            <td>Transaction settlement date</td>
+        </tr>
+        <tr>
+            <td>amount (positive)</td>
+            <td>deposit</td>
+            <td>Credit transactions</td>
+        </tr>
+        <tr>
+            <td>amount (negative)</td>
+            <td>withdrawal</td>
+            <td>Debit transactions</td>
+        </tr>
+        <tr>
+            <td>currency</td>
+            <td>currency</td>
+            <td>Transaction currency</td>
+        </tr>
+        <tr>
+            <td>description</td>
+            <td>description</td>
+            <td>Transaction description</td>
+        </tr>
+    </tbody>
+</table>
 
-                    <h2>Sync Process Flow</h2>
+<h2>Sync Schedules</h2>
 
-                    <div class="feature-highlight">
-                        <h3>Step-by-Step Process</h3>
-                        <ol>
-                            <li><strong>Initialize:</strong> Validate settings and authenticate with Airwallex</li>
-                            <li><strong>Fetch:</strong> Retrieve transactions from Airwallex API</li>
-                            <li><strong>Filter:</strong> Check for existing transactions to avoid duplicates</li>
-                            <li><strong>Map:</strong> Convert Airwallex data to ERPNext format</li>
-                            <li><strong>Create:</strong> Insert new Bank Transaction records</li>
-                            <li><strong>Progress:</strong> Update sync progress in real-time</li>
-                            <li><strong>Complete:</strong> Finalize sync and update status</li>
-                        </ol>
-                    </div>
+<h3>Schedule Options</h3>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Schedule</th>
+            <th>Frequency</th>
+            <th>Date Range</th>
+            <th>Best For</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><strong>Hourly</strong></td>
+            <td>Every hour</td>
+            <td>Last 2 hours</td>
+            <td>High-volume businesses</td>
+        </tr>
+        <tr>
+            <td><strong>Daily</strong></td>
+            <td>Once per day</td>
+            <td>Previous day</td>
+            <td>Most businesses</td>
+        </tr>
+        <tr>
+            <td><strong>Weekly</strong></td>
+            <td>Once per week</td>
+            <td>Last 7 days</td>
+            <td>Low-volume businesses</td>
+        </tr>
+        <tr>
+            <td><strong>Monthly</strong></td>
+            <td>Once per month</td>
+            <td>Last 30 days</td>
+            <td>Occasional reconciliation</td>
+        </tr>
+    </tbody>
+</table>
 
-                    <h2>Transaction Mapping</h2>
+<h2>Monitoring Sync Progress</h2>
 
-                    <h3>Data Mapping</h3>
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th>Airwallex Field</th>
-                                <th>ERPNext Field</th>
-                                <th>Description</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>id</td>
-                                <td>reference_number</td>
-                                <td>Unique transaction identifier</td>
-                            </tr>
-                            <tr>
-                                <td>settled_at</td>
-                                <td>date</td>
-                                <td>Transaction settlement date</td>
-                            </tr>
-                            <tr>
-                                <td>amount (positive)</td>
-                                <td>deposit</td>
-                                <td>Credit transactions</td>
-                            </tr>
-                            <tr>
-                                <td>amount (negative)</td>
-                                <td>withdrawal</td>
-                                <td>Debit transactions</td>
-                            </tr>
-                            <tr>
-                                <td>currency</td>
-                                <td>currency</td>
-                                <td>Transaction currency</td>
-                            </tr>
-                            <tr>
-                                <td>description</td>
-                                <td>description</td>
-                                <td>Transaction description</td>
-                            </tr>
-                        </tbody>
-                    </table>
+<h3>Real-time Updates</h3>
+<p>During sync operations, you can monitor:</p>
+<ul>
+    <li><strong>Progress Percentage:</strong> Visual progress bar</li>
+    <li><strong>Records Processed:</strong> Number of transactions processed</li>
+    <li><strong>Records Created:</strong> New transactions added</li>
+    <li><strong>Errors Encountered:</strong> Failed transaction count</li>
+    <li><strong>Current Status:</strong> Sync phase indicator</li>
+</ul>
 
-                    <h3>Transaction Types</h3>
-                    <p>Supported Airwallex transaction types:</p>
-                    <ul>
-                        <li><strong>PAYOUT:</strong> Outgoing payments to beneficiaries</li>
-                        <li><strong>CONVERSION:</strong> Currency exchange transactions</li>
-                        <li><strong>ADJUSTMENT:</strong> Account balance adjustments</li>
-                        <li><strong>FEE:</strong> Service fees and charges</li>
-                        <li><strong>REFUND:</strong> Payment refunds</li>
-                    </ul>
+<h2>Best Practices</h2>
 
-                    <h2>Sync Schedules</h2>
+<h3>Sync Frequency</h3>
+<ul>
+    <li><strong>Daily sync</strong> is recommended for most businesses</li>
+    <li><strong>Hourly sync</strong> for high-volume transaction environments</li>
+    <li><strong>Avoid overlapping</strong> date ranges to prevent duplicates</li>
+    <li><strong>Schedule during off-hours</strong> to minimize system load</li>
+</ul>
 
-                    <h3>Schedule Options</h3>
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th>Schedule</th>
-                                <th>Frequency</th>
-                                <th>Date Range</th>
-                                <th>Best For</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><strong>Hourly</strong></td>
-                                <td>Every hour</td>
-                                <td>Last 2 hours</td>
-                                <td>High-volume businesses</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Daily</strong></td>
-                                <td>Once per day</td>
-                                <td>Previous day</td>
-                                <td>Most businesses</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Weekly</strong></td>
-                                <td>Once per week</td>
-                                <td>Last 7 days</td>
-                                <td>Low-volume businesses</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Monthly</strong></td>
-                                <td>Once per month</td>
-                                <td>Last 30 days</td>
-                                <td>Occasional reconciliation</td>
-                            </tr>
-                        </tbody>
-                    </table>
+<h2>Troubleshooting Sync Issues</h2>
 
-                    <h2>Monitoring Sync Progress</h2>
+<h3>Common Problems</h3>
 
-                    <h3>Real-time Updates</h3>
-                    <p>During sync operations, you can monitor:</p>
-                    <ul>
-                        <li><strong>Progress Percentage:</strong> Visual progress bar</li>
-                        <li><strong>Records Processed:</strong> Number of transactions processed</li>
-                        <li><strong>Records Created:</strong> New transactions added</li>
-                        <li><strong>Errors Encountered:</strong> Failed transaction count</li>
-                        <li><strong>Current Status:</strong> Sync phase indicator</li>
-                    </ul>
+<h4>Sync Stuck in Progress</h4>
+<div class="alert alert-warning">
+    <strong>Symptoms:</strong> Sync status shows "In Progress" but no activity
+    <br><strong>Solutions:</strong>
+    <ul>
+        <li>Check background job queue status</li>
+        <li>Restart sync using "Restart Transaction Sync" button</li>
+        <li>Check Redis connection and worker processes</li>
+    </ul>
+</div>
 
-                    <h3>Sync Status Indicators</h3>
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th>Status</th>
-                                <th>Description</th>
-                                <th>Action Required</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><span class="badge badge-secondary">Not Started</span></td>
-                                <td>Sync has not been initiated</td>
-                                <td>Configure and start sync</td>
-                            </tr>
-                            <tr>
-                                <td><span class="badge badge-primary">In Progress</span></td>
-                                <td>Sync is currently running</td>
-                                <td>Monitor progress</td>
-                            </tr>
-                            <tr>
-                                <td><span class="badge badge-success">Completed</span></td>
-                                <td>Sync finished successfully</td>
-                                <td>Review results</td>
-                            </tr>
-                            <tr>
-                                <td><span class="badge badge-warning">Completed with Errors</span></td>
-                                <td>Sync finished but some transactions failed</td>
-                                <td>Check logs and retry failed transactions</td>
-                            </tr>
-                            <tr>
-                                <td><span class="badge badge-danger">Failed</span></td>
-                                <td>Sync encountered a critical error</td>
-                                <td>Check configuration and logs</td>
-                            </tr>
-                        </tbody>
-                    </table>
+<h4>Transactions Not Appearing</h4>
+<div class="alert alert-warning">
+    <strong>Symptoms:</strong> Sync completes but no transactions in ERPNext
+    <br><strong>Solutions:</strong>
+    <ul>
+        <li>Verify bank account mappings exist</li>
+        <li>Check date range includes transaction dates</li>
+        <li>Review logs for mapping errors</li>
+    </ul>
+</div>
 
-                    <h2>Best Practices</h2>
-
-                    <h3>Sync Frequency</h3>
-                    <ul>
-                        <li><strong>Daily sync</strong> is recommended for most businesses</li>
-                        <li><strong>Hourly sync</strong> for high-volume transaction environments</li>
-                        <li><strong>Avoid overlapping</strong> date ranges to prevent duplicates</li>
-                        <li><strong>Schedule during off-hours</strong> to minimize system load</li>
-                    </ul>
-
-                    <h3>Data Integrity</h3>
-                    <ul>
-                        <li><strong>Regular reconciliation</strong> between Airwallex and ERPNext</li>
-                        <li><strong>Monitor error logs</strong> for failed transactions</li>
-                        <li><strong>Verify bank account mappings</strong> are correct</li>
-                        <li><strong>Test with small date ranges</strong> before large syncs</li>
-                    </ul>
-
-                    <h2>Troubleshooting Sync Issues</h2>
-
-                    <h3>Common Problems</h3>
-
-                    <h4>Sync Stuck in Progress</h4>
-                    <div class="alert alert-warning">
-                        <strong>Symptoms:</strong> Sync status shows "In Progress" but no activity
-                        <br><strong>Solutions:</strong>
-                        <ul>
-                            <li>Check background job queue status</li>
-                            <li>Restart sync using "Restart Transaction Sync" button</li>
-                            <li>Check Redis connection and worker processes</li>
-                        </ul>
-                    </div>
-
-                    <h4>Transactions Not Appearing</h4>
-                    <div class="alert alert-warning">
-                        <strong>Symptoms:</strong> Sync completes but no transactions in ERPNext
-                        <br><strong>Solutions:</strong>
-                        <ul>
-                            <li>Verify bank account mappings exist</li>
-                            <li>Check date range includes transaction dates</li>
-                            <li>Review logs for mapping errors</li>
-                        </ul>
-                    </div>
-
-                    <h4>Duplicate Transactions</h4>
-                    <div class="alert alert-warning">
-                        <strong>Symptoms:</strong> Same transaction appears multiple times
-                        <br><strong>Solutions:</strong>
-                        <ul>
-                            <li>Ensure Airwallex Source ID field exists</li>
-                            <li>Check for overlapping sync date ranges</li>
-                            <li>Verify duplicate detection logic</li>
-                        </ul>
-                    </div>
-
-                    <div style="margin-top: 40px; text-align: center;">
-                        <a href="/docs/bank-accounts" class="btn btn-primary">Next: Bank Account Mapping →</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+<div style="margin-top: 40px; text-align: center;">
+    <a href="/docs/bank-accounts" class="btn btn-primary">Next: Bank Account Mapping →</a>
 </div>
 {% endblock %}

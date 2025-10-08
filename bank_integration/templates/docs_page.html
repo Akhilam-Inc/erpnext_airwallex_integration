@@ -1,0 +1,30 @@
+{% extends "templates/docs_base.html" %}
+
+{% block content %}
+<div class="docs-container">
+    <!-- Header Section -->
+    <div class="docs-header">
+        <div class="container">
+            <h1 class="docs-title">{% block page_title %}Documentation{% endblock %}</h1>
+            <p class="docs-subtitle">{% block page_subtitle %}{% endblock %}</p>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-lg-3 col-md-4">
+                {% include "templates/docs/_sidebar.html" %}
+            </div>
+
+            <!-- Content Area -->
+            <div class="col-lg-9 col-md-8">
+                <div class="docs-content">
+                    {% block page_content %}{% endblock %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

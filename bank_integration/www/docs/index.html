@@ -1,106 +1,59 @@
-{% extends "templates/web.html" %}
+{% extends "templates/docs_page.html" %}
 
 {% block title %}Bank Integration Documentation{% endblock %}
 
-{% block head_include %}
-<link rel="stylesheet" href="/assets/bank_integration/css/docs.css">
-{% endblock %}
+{% block page_title %}Bank Integration Documentation{% endblock %}
+{% block page_subtitle %}Complete guide for Airwallex bank integration with ERPNext{% endblock %}
 
-{% block content %}
-<div class="docs-container">
-    <div class="docs-header">
-        <div class="container">
-            <h1 class="docs-title">Bank Integration Documentation</h1>
-            <p class="docs-subtitle">Complete guide for Airwallex bank integration with ERPNext</p>
-        </div>
+{% block page_content %}
+<div class="docs-grid">
+    <div class="docs-card">
+        <div class="card-icon">📚</div>
+        <h3>Getting Started</h3>
+        <p>Learn how to install and configure the Bank Integration app with Airwallex.</p>
+        <a href="/docs/installation" class="btn btn-primary">Get Started</a>
     </div>
 
-    <div class="container">
-        <div class="row">
-            <div class="col-md-3">
-                <div class="docs-sidebar">
-                    <nav class="docs-nav">
-                        <h5>Getting Started</h5>
-                        <ul>
-                            <li><a href="/docs/installation">Installation</a></li>
-                            <li><a href="/docs/setup">Setup & Configuration</a></li>
-                            <li><a href="/docs/authentication">Authentication</a></li>
-                        </ul>
+    <div class="docs-card">
+        <div class="card-icon">👤</div>
+        <h3>User Guide</h3>
+        <p>Complete guide for end users on how to use the bank integration features.</p>
+        <a href="/docs/user-guide" class="btn btn-primary">User Guide</a>
+    </div>
 
-                        <h5>User Guide</h5>
-                        <ul>
-                            <li><a href="/docs/user-guide">User Guide</a></li>
-                            <li><a href="/docs/transaction-sync">Transaction Sync</a></li>
-                            <li><a href="/docs/bank-accounts">Bank Account Mapping</a></li>
-                            <li><a href="/docs/troubleshooting">Troubleshooting</a></li>
-                        </ul>
+    <div class="docs-card">
+        <div class="card-icon">⚙️</div>
+        <h3>Developer Guide</h3>
+        <p>Technical documentation for developers and system administrators.</p>
+        <a href="/docs/api-reference" class="btn btn-primary">Developer Docs</a>
+    </div>
 
-                        <h5>Developer Guide</h5>
-                        <ul>
-                            <li><a href="/docs/api-reference">API Reference</a></li>
-                            <li><a href="/docs/customization">Customization</a></li>
-                            <li><a href="/docs/development">Development</a></li>
-                            <li><a href="/docs/contributing">Contributing</a></li>
-                        </ul>
-                    </nav>
-                </div>
-            </div>
+    <div class="docs-card">
+        <div class="card-icon">🔧</div>
+        <h3>Troubleshooting</h3>
+        <p>Common issues and solutions for the bank integration app.</p>
+        <a href="/docs/troubleshooting" class="btn btn-primary">Troubleshoot</a>
+    </div>
+</div>
 
-            <div class="col-md-9">
-                <div class="docs-content">
-                    <div class="docs-grid">
-                        <div class="docs-card">
-                            <div class="card-icon">📚</div>
-                            <h3>Getting Started</h3>
-                            <p>Learn how to install and configure the Bank Integration app with Airwallex.</p>
-                            <a href="/docs/installation" class="btn btn-primary">Get Started</a>
-                        </div>
-
-                        <div class="docs-card">
-                            <div class="card-icon">👤</div>
-                            <h3>User Guide</h3>
-                            <p>Complete guide for end users on how to use the bank integration features.</p>
-                            <a href="/docs/user-guide" class="btn btn-primary">User Guide</a>
-                        </div>
-
-                        <div class="docs-card">
-                            <div class="card-icon">⚙️</div>
-                            <h3>Developer Guide</h3>
-                            <p>Technical documentation for developers and system administrators.</p>
-                            <a href="/docs/api-reference" class="btn btn-primary">Developer Docs</a>
-                        </div>
-
-                        <div class="docs-card">
-                            <div class="card-icon">🔧</div>
-                            <h3>Troubleshooting</h3>
-                            <p>Common issues and solutions for the bank integration app.</p>
-                            <a href="/docs/troubleshooting" class="btn btn-primary">Troubleshoot</a>
-                        </div>
-                    </div>
-
-                    <div class="feature-highlight">
-                        <h2>Key Features</h2>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <ul class="feature-list">
-                                    <li>✅ Automatic transaction synchronization</li>
-                                    <li>✅ Real-time bank account balance updates</li>
-                                    <li>✅ Scheduled sync (Hourly, Daily, Weekly, Monthly)</li>
-                                    <li>✅ Multi-currency support</li>
-                                </ul>
-                            </div>
-                            <div class="col-md-6">
-                                <ul class="feature-list">
-                                    <li>✅ Comprehensive logging and monitoring</li>
-                                    <li>✅ Bank account mapping configuration</li>
-                                    <li>✅ Error handling and retry mechanisms</li>
-                                    <li>✅ RESTful API integration</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+<div class="feature-highlight">
+    <h2>Key Features</h2>
+    <div class="row">
+        <div class="col-md-6">
+            <ul class="feature-list">
+                <li>✅ Automatic transaction synchronization</li>
+                <li>✅ Real-time bank account balance updates</li>
+                <li>✅ Scheduled sync (Hourly, Daily, Weekly, Monthly)</li>
+                <li>✅ Multi-currency support</li>
+            </ul>
+        </div>
+        <div class="col-md-6">
+            <ul class="feature-list">
+                <li>✅ Comprehensive logging and monitoring</li>
+                <li>✅ Bank account mapping configuration</li>
+                <li>✅ Error handling and retry mechanisms</li>
+                <li>✅ RESTful API integration</li>
+            </ul>
         </div>
     </div>
 </div>

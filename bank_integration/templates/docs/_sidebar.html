@@ -1,0 +1,50 @@
+<div class="docs-sidebar">
+    <nav class="docs-nav">
+        <h5>Getting Started</h5>
+        <ul>
+            <li><a href="/docs/installation" data-page="installation">Installation</a></li>
+            <li><a href="/docs/setup" data-page="setup">Setup & Configuration</a></li>
+            <li><a href="/docs/authentication" data-page="authentication">Authentication</a></li>
+        </ul>
+
+        <h5>User Guide</h5>
+        <ul>
+            <li><a href="/docs/user-guide" data-page="user-guide">User Guide</a></li>
+            <li><a href="/docs/transaction-sync" data-page="transaction-sync">Transaction Sync</a></li>
+            <li><a href="/docs/bank-accounts" data-page="bank-accounts">Bank Account Mapping</a></li>
+            <li><a href="/docs/troubleshooting" data-page="troubleshooting">Troubleshooting</a></li>
+        </ul>
+
+        <h5>Developer Guide</h5>
+        <ul>
+            <li><a href="/docs/api-reference" data-page="api-reference">API Reference</a></li>
+            <li><a href="/docs/customization" data-page="customization">Customization</a></li>
+        </ul>
+
+        <h5>Support</h5>
+        <ul>
+            <li><a href="/docs/faq" data-page="faq">FAQ</a></li>
+            <li><a href="/docs/changelog" data-page="changelog">Changelog</a></li>
+            <li><a href="https://github.com/Akhilam-Inc/erpnext_airwallex_integration/issues" target="_blank">Report Issues</a></li>
+        </ul>
+    </nav>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Get current page from URL
+    const currentPath = window.location.pathname;
+    const currentPage = currentPath.split('/').pop() || 'index';
+
+    // Remove any existing active classes
+    document.querySelectorAll('.docs-nav a').forEach(link => {
+        link.classList.remove('active');
+    });
+
+    // Add active class to current page
+    const currentLink = document.querySelector(`[data-page="${currentPage}"]`);
+    if (currentLink) {
+        currentLink.classList.add('active');
+    }
+});
+</script>

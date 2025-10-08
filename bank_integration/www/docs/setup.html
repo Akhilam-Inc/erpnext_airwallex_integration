@@ -1,155 +1,116 @@
-{% extends "templates/web.html" %}
+{% extends "templates/docs_page.html" %}
 
 {% block title %}Setup & Configuration - Bank Integration Documentation{% endblock %}
 
-{% block head_include %}
-<link rel="stylesheet" href="/assets/bank_integration/css/docs.css">
-{% endblock %}
+{% block page_title %}Setup & Configuration{% endblock %}
+{% block page_subtitle %}Configure your bank integration settings{% endblock %}
 
-{% block content %}
-<div class="docs-container">
-    <div class="docs-header">
-        <div class="container">
-            <h1 class="docs-title">Setup & Configuration</h1>
-            <p class="docs-subtitle">Configure your bank integration settings</p>
-        </div>
-    </div>
+{% block page_content %}
+<h1>Setup & Configuration</h1>
 
-    <div class="container">
-        <div class="row">
-            <div class="col-md-3">
-                <div class="docs-sidebar">
-                    <nav class="docs-nav">
-                        <h5>Getting Started</h5>
-                        <ul>
-                            <li><a href="/docs/installation">Installation</a></li>
-                            <li><a href="/docs/setup" class="active">Setup & Configuration</a></li>
-                            <li><a href="/docs/authentication">Authentication</a></li>
-                        </ul>
+<p>After installation, you need to configure the Bank Integration settings to connect with your Airwallex account.</p>
 
-                        <h5>User Guide</h5>
-                        <ul>
-                            <li><a href="/docs/user-guide">User Guide</a></li>
-                            <li><a href="/docs/transaction-sync">Transaction Sync</a></li>
-                            <li><a href="/docs/bank-accounts">Bank Account Mapping</a></li>
-                        </ul>
+<h2>1. Access Bank Integration Settings</h2>
 
-                        <h5>Developer Guide</h5>
-                        <ul>
-                            <li><a href="/docs/api-reference">API Reference</a></li>
-                            <li><a href="/docs/development">Development</a></li>
-                        </ul>
-                    </nav>
-                </div>
-            </div>
+<ol>
+    <li>Login to your ERPNext site</li>
+    <li>Navigate to <strong>Setup → Bank Integration Setting</strong></li>
+    <li>You'll see the Bank Integration Setting form</li>
+</ol>
 
-            <div class="col-md-9">
-                <div class="docs-content">
-                    <h1>Setup & Configuration</h1>
+<h2>2. Basic Configuration</h2>
 
-                    <p>After installation, you need to configure the Bank Integration settings to connect with your Airwallex account.</p>
+<h3>Enable Airwallex Integration</h3>
+<ul>
+    <li>Check the <strong>"Enable Airwallex"</strong> checkbox</li>
+    <li>This activates the integration features</li>
+</ul>
 
-                    <h2>1. Access Bank Integration Settings</h2>
+<h3>API Configuration</h3>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Field</th>
+            <th>Description</th>
+            <th>Required</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><strong>Client ID</strong></td>
+            <td>Your Airwallex Client ID from the developer portal</td>
+            <td>Yes</td>
+        </tr>
+        <tr>
+            <td><strong>API Key</strong></td>
+            <td>Your Airwallex API Key (stored securely)</td>
+            <td>Yes</td>
+        </tr>
+        <tr>
+            <td><strong>API URL</strong></td>
+            <td>Airwallex API endpoint (default: https://api.airwallex.com)</td>
+            <td>Yes</td>
+        </tr>
+    </tbody>
+</table>
 
-                    <ol>
-                        <li>Login to your ERPNext site</li>
-                        <li>Navigate to <strong>Setup → Bank Integration Setting</strong></li>
-                        <li>You'll see the Bank Integration Setting form</li>
-                    </ol>
+<div class="alert alert-info">
+    <strong>Getting API Credentials:</strong> You can obtain your Client ID and API Key from the Airwallex Developer Portal at <a href="https://developer.airwallex.com" target="_blank">developer.airwallex.com</a>
+</div>
 
-                    <h2>2. Basic Configuration</h2>
+<h2>3. Sync Configuration</h2>
 
-                    <h3>Enable Airwallex Integration</h3>
-                    <ul>
-                        <li>Check the <strong>"Enable Airwallex"</strong> checkbox</li>
-                        <li>This activates the integration features</li>
-                    </ul>
+<h3>Old Transaction Sync</h3>
+<ul>
+    <li><strong>Sync Old Transactions:</strong> Enable to sync historical transactions</li>
+    <li><strong>From Date:</strong> Start date for historical sync</li>
+    <li><strong>To Date:</strong> End date for historical sync</li>
+</ul>
 
-                    <h3>API Configuration</h3>
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th>Field</th>
-                                <th>Description</th>
-                                <th>Required</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><strong>Client ID</strong></td>
-                                <td>Your Airwallex Client ID from the developer portal</td>
-                                <td>Yes</td>
-                            </tr>
-                            <tr>
-                                <td><strong>API Key</strong></td>
-                                <td>Your Airwallex API Key (stored securely)</td>
-                                <td>Yes</td>
-                            </tr>
-                            <tr>
-                                <td><strong>API URL</strong></td>
-                                <td>Airwallex API endpoint (default: https://api.airwallex.com)</td>
-                                <td>Yes</td>
-                            </tr>
-                        </tbody>
-                    </table>
+<h3>Scheduled Sync</h3>
+<p>Configure automatic synchronization:</p>
+<ul>
+    <li><strong>Hourly:</strong> Syncs transactions every hour</li>
+    <li><strong>Daily:</strong> Syncs transactions once per day</li>
+    <li><strong>Weekly:</strong> Syncs transactions once per week</li>
+    <li><strong>Monthly:</strong> Syncs transactions once per month</li>
+</ul>
 
-                    <div class="alert alert-info">
-                        <strong>Getting API Credentials:</strong> You can obtain your Client ID and API Key from the Airwallex Developer Portal at <a href="https://developer.airwallex.com" target="_blank">developer.airwallex.com</a>
-                    </div>
+<h2>4. Bank Account Mapping</h2>
 
-                    <h2>3. Sync Configuration</h2>
+<p>Map your Airwallex accounts to ERPNext bank accounts:</p>
 
-                    <h3>Old Transaction Sync</h3>
-                    <ul>
-                        <li><strong>Sync Old Transactions:</strong> Enable to sync historical transactions</li>
-                        <li><strong>From Date:</strong> Start date for historical sync</li>
-                        <li><strong>To Date:</strong> End date for historical sync</li>
-                    </ul>
+<ol>
+    <li>In the <strong>Bank Account Mappings</strong> section, click <strong>"Add Row"</strong></li>
+    <li>Select the appropriate ERPNext Bank Account</li>
+    <li>Enter the corresponding currency</li>
+    <li>Save the mapping</li>
+</ol>
 
-                    <h3>Scheduled Sync</h3>
-                    <p>Configure automatic synchronization:</p>
-                    <ul>
-                        <li><strong>Hourly:</strong> Syncs transactions every hour</li>
-                        <li><strong>Daily:</strong> Syncs transactions once per day</li>
-                        <li><strong>Weekly:</strong> Syncs transactions once per week</li>
-                        <li><strong>Monthly:</strong> Syncs transactions once per month</li>
-                    </ul>
+<div class="alert alert-warning">
+    <strong>Important:</strong> Make sure your ERPNext bank accounts are created before mapping them. Go to <strong>Accounting → Bank Account</strong> to create them if needed.
+</div>
 
-                    <h2>4. Bank Account Mapping</h2>
+<h2>5. Test Authentication</h2>
 
-                    <p>Map your Airwallex accounts to ERPNext bank accounts:</p>
+<p>After entering your credentials:</p>
+<ol>
+    <li>Click the <strong>"Test Authentication"</strong> button</li>
+    <li>If successful, you'll see a green success message</li>
+    <li>If it fails, check your credentials and network connection</li>
+</ol>
 
-                    <ol>
-                        <li>In the <strong>Bank Account Mappings</strong> section, click <strong>"Add Row"</strong></li>
-                        <li>Select the appropriate ERPNext Bank Account</li>
-                        <li>Enter the corresponding currency</li>
-                        <li>Save the mapping</li>
-                    </ol>
+<h2>6. Enable Logging (Optional)</h2>
 
-                    <div class="alert alert-warning">
-                        <strong>Important:</strong> Make sure your ERPNext bank accounts are created before mapping them. Go to <strong>Accounting → Bank Account</strong> to create them if needed.
-                    </div>
+<ul>
+    <li>Check <strong>"Enable Log"</strong> to track API requests and responses</li>
+    <li>Useful for debugging and monitoring</li>
+    <li>Logs can be viewed in <strong>Bank Integration Log</strong></li>
+</ul>
 
-                    <h2>5. Test Authentication</h2>
+<h2>Configuration Example</h2>
 
-                    <p>After entering your credentials:</p>
-                    <ol>
-                        <li>Click the <strong>"Test Authentication"</strong> button</li>
-                        <li>If successful, you'll see a green success message</li>
-                        <li>If it fails, check your credentials and network connection</li>
-                    </ol>
-
-                    <h2>6. Enable Logging (Optional)</h2>
-
-                    <ul>
-                        <li>Check <strong>"Enable Log"</strong> to track API requests and responses</li>
-                        <li>Useful for debugging and monitoring</li>
-                        <li>Logs can be viewed in <strong>Bank Integration Log</strong></li>
-                    </ul>
-
-                    <h2>Configuration Example</h2>
-
-                    <pre><code>✅ Enable Airwallex: Checked
+<pre><code>✅ Enable Airwallex: Checked
 📧 Client ID: your-client-id-here
 🔑 API Key: **********************
 🌐 API URL: https://api.airwallex.com
@@ -161,21 +122,16 @@
 - EUR Account → EUR
 - GBP Account → GBP</code></pre>
 
-                    <h2>Next Steps</h2>
+<h2>Next Steps</h2>
 
-                    <p>After configuration:</p>
-                    <ul>
-                        <li>Test the connection using the authentication test</li>
-                        <li>Configure your sync schedule</li>
-                        <li>Start your first transaction sync</li>
-                    </ul>
+<p>After configuration:</p>
+<ul>
+    <li>Test the connection using the authentication test</li>
+    <li>Configure your sync schedule</li>
+    <li>Start your first transaction sync</li>
+</ul>
 
-                    <div style="margin-top: 40px; text-align: center;">
-                        <a href="/docs/authentication" class="btn btn-primary">Next: Authentication Guide →</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+<div style="margin-top: 40px; text-align: center;">
+    <a href="/docs/authentication" class="btn btn-primary">Next: Authentication Guide →</a>
 </div>
 {% endblock %}

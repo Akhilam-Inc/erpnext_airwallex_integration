@@ -1,211 +1,166 @@
-{% extends "templates/web.html" %}
+{% extends "templates/docs_page.html" %}
 
 {% block title %}User Guide - Bank Integration Documentation{% endblock %}
 
-{% block head_include %}
-<link rel="stylesheet" href="/assets/bank_integration/css/docs.css">
-{% endblock %}
+{% block page_title %}User Guide{% endblock %}
+{% block page_subtitle %}Complete guide for using the bank integration features{% endblock %}
 
-{% block content %}
-<div class="docs-container">
-    <div class="docs-header">
-        <div class="container">
-            <h1 class="docs-title">User Guide</h1>
-            <p class="docs-subtitle">Complete guide for using the bank integration features</p>
-        </div>
+{% block page_content %}
+<h1>User Guide</h1>
+
+<p>This guide covers how to use the Bank Integration app for day-to-day operations.</p>
+
+<h2>Dashboard Overview</h2>
+
+<p>The Bank Integration Setting provides a centralized dashboard for managing your bank integrations:</p>
+
+<ul>
+    <li><strong>Sync Status:</strong> Current status of transaction synchronization</li>
+    <li><strong>Last Sync Date:</strong> When the last sync was performed</li>
+    <li><strong>Progress Tracking:</strong> Real-time progress of ongoing syncs</li>
+    <li><strong>Action Buttons:</strong> Start, restart, or stop sync operations</li>
+</ul>
+
+<h2>Starting a Transaction Sync</h2>
+
+<h3>Manual Sync</h3>
+<ol>
+    <li>Navigate to <strong>Setup → Bank Integration Setting</strong></li>
+    <li>Enable <strong>"Sync Old Transactions"</strong></li>
+    <li>Set your <strong>From Date</strong> and <strong>To Date</strong></li>
+    <li>Click <strong>"Start Transaction Sync"</strong></li>
+    <li>Confirm the date range in the popup</li>
+    <li>Monitor progress in real-time</li>
+</ol>
+
+<h3>Scheduled Sync</h3>
+<ol>
+    <li>Enable <strong>"Enable Airwallex"</strong></li>
+    <li>Select your preferred <strong>Sync Schedule</strong>:
+        <ul>
+            <li><strong>Hourly:</strong> Syncs last 2 hours every hour</li>
+            <li><strong>Daily:</strong> Syncs previous day daily</li>
+            <li><strong>Weekly:</strong> Syncs last 7 days weekly</li>
+            <li><strong>Monthly:</strong> Syncs last 30 days monthly</li>
+        </ul>
+    </li>
+    <li>The system will automatically sync based on your schedule</li>
+</ol>
+
+<h2>Monitoring Sync Progress</h2>
+
+<h3>Real-time Updates</h3>
+<p>While a sync is running, you'll see:</p>
+<ul>
+    <li><strong>Sync Status:</strong> "In Progress"</li>
+    <li><strong>Progress Bar:</strong> Percentage completed</li>
+    <li><strong>Processed Records:</strong> Number of transactions processed</li>
+    <li><strong>Total Records:</strong> Total transactions to process</li>
+</ul>
+
+<h3>Sync Actions</h3>
+<div class="row">
+    <div class="col-md-6">
+        <h4>Start Sync</h4>
+        <p>Available when no sync is running. Starts a new transaction sync with your specified date range.</p>
     </div>
-
-    <div class="container">
-        <div class="row">
-            <div class="col-md-3">
-                <div class="docs-sidebar">
-                    <nav class="docs-nav">
-                        <h5>Getting Started</h5>
-                        <ul>
-                            <li><a href="/docs/installation">Installation</a></li>
-                            <li><a href="/docs/setup">Setup & Configuration</a></li>
-                            <li><a href="/docs/authentication">Authentication</a></li>
-                        </ul>
-
-                        <h5>User Guide</h5>
-                        <ul>
-                            <li><a href="/docs/user-guide" class="active">User Guide</a></li>
-                            <li><a href="/docs/transaction-sync">Transaction Sync</a></li>
-                            <li><a href="/docs/bank-accounts">Bank Account Mapping</a></li>
-                            <li><a href="/docs/troubleshooting">Troubleshooting</a></li>
-                        </ul>
-
-                        <h5>Developer Guide</h5>
-                        <ul>
-                            <li><a href="/docs/api-reference">API Reference</a></li>
-                            <li><a href="/docs/development">Development</a></li>
-                        </ul>
-                    </nav>
-                </div>
-            </div>
-
-            <div class="col-md-9">
-                <div class="docs-content">
-                    <h1>User Guide</h1>
-
-                    <p>This guide covers how to use the Bank Integration app for day-to-day operations.</p>
-
-                    <h2>Dashboard Overview</h2>
-
-                    <p>The Bank Integration Setting provides a centralized dashboard for managing your bank integrations:</p>
-
-                    <ul>
-                        <li><strong>Sync Status:</strong> Current status of transaction synchronization</li>
-                        <li><strong>Last Sync Date:</strong> When the last sync was performed</li>
-                        <li><strong>Progress Tracking:</strong> Real-time progress of ongoing syncs</li>
-                        <li><strong>Action Buttons:</strong> Start, restart, or stop sync operations</li>
-                    </ul>
-
-                    <h2>Starting a Transaction Sync</h2>
-
-                    <h3>Manual Sync</h3>
-                    <ol>
-                        <li>Navigate to <strong>Setup → Bank Integration Setting</strong></li>
-                        <li>Enable <strong>"Sync Old Transactions"</strong></li>
-                        <li>Set your <strong>From Date</strong> and <strong>To Date</strong></li>
-                        <li>Click <strong>"Start Transaction Sync"</strong></li>
-                        <li>Confirm the date range in the popup</li>
-                        <li>Monitor progress in real-time</li>
-                    </ol>
-
-                    <h3>Scheduled Sync</h3>
-                    <ol>
-                        <li>Enable <strong>"Enable Airwallex"</strong></li>
-                        <li>Select your preferred <strong>Sync Schedule</strong>:
-                            <ul>
-                                <li><strong>Hourly:</strong> Syncs last 2 hours every hour</li>
-                                <li><strong>Daily:</strong> Syncs previous day daily</li>
-                                <li><strong>Weekly:</strong> Syncs last 7 days weekly</li>
-                                <li><strong>Monthly:</strong> Syncs last 30 days monthly</li>
-                            </ul>
-                        </li>
-                        <li>The system will automatically sync based on your schedule</li>
-                    </ol>
-
-                    <h2>Monitoring Sync Progress</h2>
-
-                    <h3>Real-time Updates</h3>
-                    <p>While a sync is running, you'll see:</p>
-                    <ul>
-                        <li><strong>Sync Status:</strong> "In Progress"</li>
-                        <li><strong>Progress Bar:</strong> Percentage completed</li>
-                        <li><strong>Processed Records:</strong> Number of transactions processed</li>
-                        <li><strong>Total Records:</strong> Total transactions to process</li>
-                    </ul>
-
-                    <h3>Sync Actions</h3>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <h4>Start Sync</h4>
-                            <p>Available when no sync is running. Starts a new transaction sync with your specified date range.</p>
-                        </div>
-                        <div class="col-md-6">
-                            <h4>Restart Sync</h4>
-                            <p>Available after a sync completes or fails. Resets counters and starts a fresh sync.</p>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <h4>Stop Sync</h4>
-                            <p>Available during an active sync. Marks the current sync as stopped.</p>
-                        </div>
-                    </div>
-
-                    <h2>Viewing Synced Transactions</h2>
-
-                    <h3>Bank Transaction List</h3>
-                    <ol>
-                        <li>Navigate to <strong>Accounting → Bank Transaction</strong></li>
-                        <li>Filter by date range to see synced transactions</li>
-                        <li>Look for transactions with <strong>Airwallex Source ID</strong> to identify synced records</li>
-                    </ol>
-
-                    <h3>Transaction Details</h3>
-                    <p>Each synced transaction includes:</p>
-                    <ul>
-                        <li><strong>Date:</strong> Transaction settlement date</li>
-                        <li><strong>Bank Account:</strong> Mapped ERPNext bank account</li>
-                        <li><strong>Deposit/Withdrawal:</strong> Transaction amount</li>
-                        <li><strong>Currency:</strong> Transaction currency</li>
-                        <li><strong>Description:</strong> Transaction description from Airwallex</li>
-                        <li><strong>Reference Number:</strong> Airwallex transaction ID</li>
-                        <li><strong>Airwallex Source ID:</strong> Original Airwallex identifier</li>
-                        <li><strong>Airwallex Source Type:</strong> Type of transaction (PAYOUT, CONVERSION, etc.)</li>
-                    </ul>
-
-                    <h2>Managing Bank Account Mappings</h2>
-
-                    <h3>Adding New Mappings</h3>
-                    <ol>
-                        <li>In Bank Integration Setting, scroll to <strong>"Bank Account Mappings"</strong></li>
-                        <li>Click <strong>"Add Row"</strong></li>
-                        <li>Select the ERPNext Bank Account</li>
-                        <li>Enter the corresponding currency code (USD, EUR, GBP, etc.)</li>
-                        <li>Save the document</li>
-                    </ol>
-
-                    <h3>Updating Mappings</h3>
-                    <ol>
-                        <li>Click on an existing mapping row</li>
-                        <li>Update the Bank Account or Currency as needed</li>
-                        <li>Save the document</li>
-                    </ol>
-
-                    <div class="alert alert-info">
-                        <strong>Best Practice:</strong> Create bank accounts in ERPNext first (Accounting → Bank Account) before mapping them in the integration settings.
-                    </div>
-
-                    <h2>Viewing Integration Logs</h2>
-
-                    <h3>Accessing Logs</h3>
-                    <ol>
-                        <li>Navigate to <strong>Bank Integration Log</strong></li>
-                        <li>View chronological list of all integration activities</li>
-                        <li>Filter by status (Success, Error, Info, Warning)</li>
-                    </ol>
-
-                    <h3>Log Information</h3>
-                    <p>Each log entry shows:</p>
-                    <ul>
-                        <li><strong>Title:</strong> Brief description of the action</li>
-                        <li><strong>Status:</strong> Color-coded status indicator</li>
-                        <li><strong>Message:</strong> Detailed information about the operation</li>
-                        <li><strong>Timestamp:</strong> When the action occurred</li>
-                    </ul>
-
-                    <h2>Common Tasks</h2>
-
-                    <h3>Sync Today's Transactions</h3>
-                    <ol>
-                        <li>Set From Date and To Date to today's date</li>
-                        <li>Click "Start Transaction Sync"</li>
-                    </ol>
-
-                    <h3>Sync Last Week's Transactions</h3>
-                    <ol>
-                        <li>Set From Date to 7 days ago</li>
-                        <li>Set To Date to yesterday</li>
-                        <li>Click "Start Transaction Sync"</li>
-                    </ol>
-
-                    <h3>Check Sync Status</h3>
-                    <ol>
-                        <li>Open Bank Integration Setting</li>
-                        <li>Check the "Sync Status" field</li>
-                        <li>Review "Last Sync Date" for last successful sync</li>
-                    </ol>
-
-                    <div style="margin-top: 40px; text-align: center;">
-                        <a href="/docs/transaction-sync" class="btn btn-primary">Next: Transaction Sync Details →</a>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div class="col-md-6">
+        <h4>Restart Sync</h4>
+        <p>Available after a sync completes or fails. Resets counters and starts a fresh sync.</p>
     </div>
+</div>
+<div class="row">
+    <div class="col-md-6">
+        <h4>Stop Sync</h4>
+        <p>Available during an active sync. Marks the current sync as stopped.</p>
+    </div>
+</div>
+
+<h2>Viewing Synced Transactions</h2>
+
+<h3>Bank Transaction List</h3>
+<ol>
+    <li>Navigate to <strong>Accounting → Bank Transaction</strong></li>
+    <li>Filter by date range to see synced transactions</li>
+    <li>Look for transactions with <strong>Airwallex Source ID</strong> to identify synced records</li>
+</ol>
+
+<h3>Transaction Details</h3>
+<p>Each synced transaction includes:</p>
+<ul>
+    <li><strong>Date:</strong> Transaction settlement date</li>
+    <li><strong>Bank Account:</strong> Mapped ERPNext bank account</li>
+    <li><strong>Deposit/Withdrawal:</strong> Transaction amount</li>
+    <li><strong>Currency:</strong> Transaction currency</li>
+    <li><strong>Description:</strong> Transaction description from Airwallex</li>
+    <li><strong>Reference Number:</strong> Airwallex transaction ID</li>
+    <li><strong>Airwallex Source ID:</strong> Original Airwallex identifier</li>
+    <li><strong>Airwallex Source Type:</strong> Type of transaction (PAYOUT, CONVERSION, etc.)</li>
+</ul>
+
+<h2>Managing Bank Account Mappings</h2>
+
+<h3>Adding New Mappings</h3>
+<ol>
+    <li>In Bank Integration Setting, scroll to <strong>"Bank Account Mappings"</strong></li>
+    <li>Click <strong>"Add Row"</strong></li>
+    <li>Select the ERPNext Bank Account</li>
+    <li>Enter the corresponding currency code (USD, EUR, GBP, etc.)</li>
+    <li>Save the document</li>
+</ol>
+
+<h3>Updating Mappings</h3>
+<ol>
+    <li>Click on an existing mapping row</li>
+    <li>Update the Bank Account or Currency as needed</li>
+    <li>Save the document</li>
+</ol>
+
+<div class="alert alert-info">
+    <strong>Best Practice:</strong> Create bank accounts in ERPNext first (Accounting → Bank Account) before mapping them in the integration settings.
+</div>
+
+<h2>Viewing Integration Logs</h2>
+
+<h3>Accessing Logs</h3>
+<ol>
+    <li>Navigate to <strong>Bank Integration Log</strong></li>
+    <li>View chronological list of all integration activities</li>
+    <li>Filter by status (Success, Error, Info, Warning)</li>
+</ol>
+
+<h3>Log Information</h3>
+<p>Each log entry shows:</p>
+<ul>
+    <li><strong>Title:</strong> Brief description of the action</li>
+    <li><strong>Status:</strong> Color-coded status indicator</li>
+    <li><strong>Message:</strong> Detailed information about the operation</li>
+    <li><strong>Timestamp:</strong> When the action occurred</li>
+</ul>
+
+<h2>Common Tasks</h2>
+
+<h3>Sync Today's Transactions</h3>
+<ol>
+    <li>Set From Date and To Date to today's date</li>
+    <li>Click "Start Transaction Sync"</li>
+</ol>
+
+<h3>Sync Last Week's Transactions</h3>
+<ol>
+    <li>Set From Date to 7 days ago</li>
+    <li>Set To Date to yesterday</li>
+    <li>Click "Start Transaction Sync"</li>
+</ol>
+
+<h3>Check Sync Status</h3>
+<ol>
+    <li>Open Bank Integration Setting</li>
+    <li>Check the "Sync Status" field</li>
+    <li>Review "Last Sync Date" for last successful sync</li>
+</ol>
+
+<div style="margin-top: 40px; text-align: center;">
+    <a href="/docs/transaction-sync" class="btn btn-primary">Next: Transaction Sync Details →</a>
 </div>
 {% endblock %}

@@ -1,309 +1,179 @@
-{% extends "templates/web.html" %}
+{% extends "templates/docs_page.html" %}
 
 {% block title %}Bank Account Mapping - Bank Integration Documentation{% endblock %}
 
-{% block head_include %}
-<link rel="stylesheet" href="/assets/bank_integration/css/docs.css">
-{% endblock %}
+{% block page_title %}Bank Account Mapping{% endblock %}
+{% block page_subtitle %}Configure mappings between Airwallex and ERPNext accounts{% endblock %}
 
-{% block content %}
-<div class="docs-container">
-    <div class="docs-header">
-        <div class="container">
-            <h1 class="docs-title">Bank Account Mapping</h1>
-            <p class="docs-subtitle">Configure mappings between Airwallex and ERPNext accounts</p>
-        </div>
-    </div>
+{% block page_content %}
+<h1>Bank Account Mapping</h1>
 
-    <div class="container">
-        <div class="row">
-            <div class="col-md-3">
-                <div class="docs-sidebar">
-                    <nav class="docs-nav">
-                        <h5>Getting Started</h5>
-                        <ul>
-                            <li><a href="/docs/installation">Installation</a></li>
-                            <li><a href="/docs/setup">Setup & Configuration</a></li>
-                            <li><a href="/docs/authentication">Authentication</a></li>
-                        </ul>
+<p>Proper bank account mapping is essential for accurate transaction synchronization between Airwallex and ERPNext.</p>
 
-                        <h5>User Guide</h5>
-                        <ul>
-                            <li><a href="/docs/user-guide">User Guide</a></li>
-                            <li><a href="/docs/transaction-sync">Transaction Sync</a></li>
-                            <li><a href="/docs/bank-accounts" class="active">Bank Account Mapping</a></li>
-                            <li><a href="/docs/troubleshooting">Troubleshooting</a></li>
-                        </ul>
+<h2>Understanding Account Mapping</h2>
 
-                        <h5>Developer Guide</h5>
-                        <ul>
-                            <li><a href="/docs/api-reference">API Reference</a></li>
-                            <li><a href="/docs/development">Development</a></li>
-                        </ul>
-                    </nav>
-                </div>
-            </div>
+<p>Bank account mapping connects your Airwallex multi-currency wallets with corresponding ERPNext bank accounts. This ensures transactions are recorded in the correct accounts based on their currency.</p>
 
-            <div class="col-md-9">
-                <div class="docs-content">
-                    <h1>Bank Account Mapping</h1>
+<h3>Why Mapping is Important</h3>
+<ul>
+    <li>🎯 <strong>Accurate Recording:</strong> Ensures transactions go to the right accounts</li>
+    <li>💰 <strong>Multi-Currency Support:</strong> Handles different currencies properly</li>
+    <li>📊 <strong>Financial Reporting:</strong> Maintains clean financial records</li>
+    <li>⚖️ <strong>Reconciliation:</strong> Simplifies bank reconciliation process</li>
+</ul>
 
-                    <p>Proper bank account mapping is essential for accurate transaction synchronization between Airwallex and ERPNext.</p>
+<h2>Setting Up Bank Accounts in ERPNext</h2>
 
-                    <h2>Understanding Account Mapping</h2>
+<h3>Creating Bank Accounts</h3>
+<ol>
+    <li>Navigate to <strong>Accounting → Chart of Accounts</strong></li>
+    <li>Find your <strong>Bank Accounts</strong> group</li>
+    <li>Click <strong>"Add Child"</strong></li>
+    <li>Configure the account:
+        <ul>
+            <li><strong>Account Name:</strong> Descriptive name (e.g., "Airwallex USD Account")</li>
+            <li><strong>Account Type:</strong> Bank</li>
+            <li><strong>Account Currency:</strong> Select appropriate currency</li>
+            <li><strong>Is Group:</strong> Unchecked</li>
+        </ul>
+    </li>
+    <li>Save the account</li>
+</ol>
 
-                    <p>Bank account mapping connects your Airwallex multi-currency wallets with corresponding ERPNext bank accounts. This ensures transactions are recorded in the correct accounts based on their currency.</p>
+<h2>Configuring Mappings</h2>
 
-                    <h3>Why Mapping is Important</h3>
-                    <ul>
-                        <li>🎯 <strong>Accurate Recording:</strong> Ensures transactions go to the right accounts</li>
-                        <li>💰 <strong>Multi-Currency Support:</strong> Handles different currencies properly</li>
-                        <li>📊 <strong>Financial Reporting:</strong> Maintains clean financial records</li>
-                        <li>⚖️ <strong>Reconciliation:</strong> Simplifies bank reconciliation process</li>
-                    </ul>
+<h3>Adding Currency Mappings</h3>
+<ol>
+    <li>Open <strong>Bank Integration Setting</strong></li>
+    <li>Scroll to <strong>"Bank Account Mappings"</strong> section</li>
+    <li>Click <strong>"Add Row"</strong></li>
+    <li>Configure each mapping:
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Field</th>
+                    <th>Description</th>
+                    <th>Example</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Bank Account</strong></td>
+                    <td>ERPNext bank account</td>
+                    <td>Airwallex USD - Company</td>
+                </tr>
+                <tr>
+                    <td><strong>Currency</strong></td>
+                    <td>3-letter currency code</td>
+                    <td>USD</td>
+                </tr>
+            </tbody>
+        </table>
+    </li>
+    <li>Save the document</li>
+</ol>
 
-                    <h2>Setting Up Bank Accounts in ERPNext</h2>
+<h2>Recommended Mapping Structure</h2>
 
-                    <h3>Creating Bank Accounts</h3>
-                    <ol>
-                        <li>Navigate to <strong>Accounting → Chart of Accounts</strong></li>
-                        <li>Find your <strong>Bank Accounts</strong> group</li>
-                        <li>Click <strong>"Add Child"</strong></li>
-                        <li>Configure the account:
-                            <ul>
-                                <li><strong>Account Name:</strong> Descriptive name (e.g., "Airwallex USD Account")</li>
-                                <li><strong>Account Type:</strong> Bank</li>
-                                <li><strong>Account Currency:</strong> Select appropriate currency</li>
-                                <li><strong>Is Group:</strong> Unchecked</li>
-                            </ul>
-                        </li>
-                        <li>Save the account</li>
-                    </ol>
+<h3>Standard Multi-Currency Setup</h3>
+<div class="feature-highlight">
+    <h4>Example Mappings</h4>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Currency</th>
+                <th>ERPNext Bank Account</th>
+                <th>Account Code</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>USD</td>
+                <td>Airwallex USD - Company</td>
+                <td>1210-001</td>
+            </tr>
+            <tr>
+                <td>EUR</td>
+                <td>Airwallex EUR - Company</td>
+                <td>1210-002</td>
+            </tr>
+            <tr>
+                <td>GBP</td>
+                <td>Airwallex GBP - Company</td>
+                <td>1210-003</td>
+            </tr>
+            <tr>
+                <td>AUD</td>
+                <td>Airwallex AUD - Company</td>
+                <td>1210-004</td>
+            </tr>
+            <tr>
+                <td>SGD</td>
+                <td>Airwallex SGD - Company</td>
+                <td>1210-005</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
 
-                    <h3>Alternative Method</h3>
-                    <ol>
-                        <li>Go to <strong>Accounting → Bank Account</strong></li>
-                        <li>Click <strong>"New"</strong></li>
-                        <li>Fill in the details:
-                            <ul>
-                                <li><strong>Account Name:</strong> Airwallex USD</li>
-                                <li><strong>Bank:</strong> Airwallex</li>
-                                <li><strong>Account Currency:</strong> USD</li>
-                                <li><strong>Account:</strong> Link to chart of accounts</li>
-                            </ul>
-                        </li>
-                        <li>Save the bank account</li>
-                    </ol>
+<h2>Mapping Logic</h2>
 
-                    <h2>Configuring Mappings</h2>
+<h3>How Transactions are Mapped</h3>
+<p>When a transaction is synced, the system follows this logic:</p>
 
-                    <h3>Adding Currency Mappings</h3>
-                    <ol>
-                        <li>Open <strong>Bank Integration Setting</strong></li>
-                        <li>Scroll to <strong>"Bank Account Mappings"</strong> section</li>
-                        <li>Click <strong>"Add Row"</strong></li>
-                        <li>Configure each mapping:
-                            <table class="table table-bordered">
-                                <thead>
-                                    <tr>
-                                        <th>Field</th>
-                                        <th>Description</th>
-                                        <th>Example</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td><strong>Bank Account</strong></td>
-                                        <td>ERPNext bank account</td>
-                                        <td>Airwallex USD - Company</td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>Currency</strong></td>
-                                        <td>3-letter currency code</td>
-                                        <td>USD</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </li>
-                        <li>Save the document</li>
-                    </ol>
+<ol>
+    <li><strong>Currency Check:</strong> Identify transaction currency from Airwallex</li>
+    <li><strong>Mapping Lookup:</strong> Find corresponding ERPNext bank account</li>
+    <li><strong>Account Assignment:</strong> Assign transaction to mapped account</li>
+    <li><strong>Fallback Logic:</strong> Use default account if no mapping found</li>
+</ol>
 
-                    <h2>Recommended Mapping Structure</h2>
+<h3>Fallback Mechanism</h3>
+<p>If no mapping is found for a currency, the system will:</p>
+<ol>
+    <li>Search for any bank account with matching currency</li>
+    <li>Create a default account name like "Airwallex {Currency} Account"</li>
+    <li>Log a warning for manual review</li>
+</ol>
 
-                    <h3>Standard Multi-Currency Setup</h3>
-                    <div class="feature-highlight">
-                        <h4>Example Mappings</h4>
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th>Currency</th>
-                                    <th>ERPNext Bank Account</th>
-                                    <th>Account Code</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>USD</td>
-                                    <td>Airwallex USD - Company</td>
-                                    <td>1210-001</td>
-                                </tr>
-                                <tr>
-                                    <td>EUR</td>
-                                    <td>Airwallex EUR - Company</td>
-                                    <td>1210-002</td>
-                                </tr>
-                                <tr>
-                                    <td>GBP</td>
-                                    <td>Airwallex GBP - Company</td>
-                                    <td>1210-003</td>
-                                </tr>
-                                <tr>
-                                    <td>AUD</td>
-                                    <td>Airwallex AUD - Company</td>
-                                    <td>1210-004</td>
-                                </tr>
-                                <tr>
-                                    <td>SGD</td>
-                                    <td>Airwallex SGD - Company</td>
-                                    <td>1210-005</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+<div class="alert alert-warning">
+    <strong>Important:</strong> Always create proper mappings to avoid transactions going to unexpected accounts.
+</div>
 
-                    <h2>Mapping Logic</h2>
+<h2>Best Practices</h2>
 
-                    <h3>How Transactions are Mapped</h3>
-                    <p>When a transaction is synced, the system follows this logic:</p>
+<h3>Naming Conventions</h3>
+<ul>
+    <li><strong>Consistent Naming:</strong> Use "Airwallex {Currency} - {Company}" format</li>
+    <li><strong>Currency Codes:</strong> Always use 3-letter ISO currency codes</li>
+    <li><strong>Clear Descriptions:</strong> Include bank name and currency in descriptions</li>
+</ul>
 
-                    <ol>
-                        <li><strong>Currency Check:</strong> Identify transaction currency from Airwallex</li>
-                        <li><strong>Mapping Lookup:</strong> Find corresponding ERPNext bank account</li>
-                        <li><strong>Account Assignment:</strong> Assign transaction to mapped account</li>
-                        <li><strong>Fallback Logic:</strong> Use default account if no mapping found</li>
-                    </ol>
+<h2>Troubleshooting Mapping Issues</h2>
 
-                    <h3>Fallback Mechanism</h3>
-                    <p>If no mapping is found for a currency, the system will:</p>
-                    <ol>
-                        <li>Search for any bank account with matching currency</li>
-                        <li>Create a default account name like "Airwallex {Currency} Account"</li>
-                        <li>Log a warning for manual review</li>
-                    </ol>
+<h3>Transactions in Wrong Accounts</h3>
+<div class="alert alert-warning">
+    <strong>Problem:</strong> Transactions appear in unexpected bank accounts
+    <br><strong>Solutions:</strong>
+    <ul>
+        <li>Verify currency mapping is correct</li>
+        <li>Check account names match exactly</li>
+        <li>Ensure accounts exist in Chart of Accounts</li>
+    </ul>
+</div>
 
-                    <div class="alert alert-warning">
-                        <strong>Important:</strong> Always create proper mappings to avoid transactions going to unexpected accounts.
-                    </div>
+<h3>Missing Bank Accounts</h3>
+<div class="alert alert-warning">
+    <strong>Problem:</strong> Sync fails with "Bank account not found" error
+    <br><strong>Solutions:</strong>
+    <ul>
+        <li>Create missing bank accounts in ERPNext</li>
+        <li>Update mappings with correct account names</li>
+        <li>Check account permissions and company assignment</li>
+    </ul>
+</div>
 
-                    <h2>Managing Multiple Companies</h2>
-
-                    <h3>Company-Specific Mappings</h3>
-                    <p>For multi-company setups:</p>
-
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th>Company</th>
-                                <th>Currency</th>
-                                <th>Bank Account</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Company A</td>
-                                <td>USD</td>
-                                <td>Airwallex USD - Company A</td>
-                            </tr>
-                            <tr>
-                                <td>Company A</td>
-                                <td>EUR</td>
-                                <td>Airwallex EUR - Company A</td>
-                            </tr>
-                            <tr>
-                                <td>Company B</td>
-                                <td>USD</td>
-                                <td>Airwallex USD - Company B</td>
-                            </tr>
-                            <tr>
-                                <td>Company B</td>
-                                <td>GBP</td>
-                                <td>Airwallex GBP - Company B</td>
-                            </tr>
-                        </tbody>
-                    </table>
-
-                    <h2>Best Practices</h2>
-
-                    <h3>Naming Conventions</h3>
-                    <ul>
-                        <li><strong>Consistent Naming:</strong> Use "Airwallex {Currency} - {Company}" format</li>
-                        <li><strong>Currency Codes:</strong> Always use 3-letter ISO currency codes</li>
-                        <li><strong>Clear Descriptions:</strong> Include bank name and currency in descriptions</li>
-                    </ul>
-
-                    <h3>Maintenance</h3>
-                    <ul>
-                        <li><strong>Regular Review:</strong> Check mappings monthly for accuracy</li>
-                        <li><strong>New Currencies:</strong> Add mappings when you start using new currencies</li>
-                        <li><strong>Account Updates:</strong> Update mappings if you change bank account structure</li>
-                    </ul>
-
-                    <h2>Troubleshooting Mapping Issues</h2>
-
-                    <h3>Transactions in Wrong Accounts</h3>
-                    <div class="alert alert-warning">
-                        <strong>Problem:</strong> Transactions appear in unexpected bank accounts
-                        <br><strong>Solutions:</strong>
-                        <ul>
-                            <li>Verify currency mapping is correct</li>
-                            <li>Check account names match exactly</li>
-                            <li>Ensure accounts exist in Chart of Accounts</li>
-                        </ul>
-                    </div>
-
-                    <h3>Missing Bank Accounts</h3>
-                    <div class="alert alert-warning">
-                        <strong>Problem:</strong> Sync fails with "Bank account not found" error
-                        <br><strong>Solutions:</strong>
-                        <ul>
-                            <li>Create missing bank accounts in ERPNext</li>
-                            <li>Update mappings with correct account names</li>
-                            <li>Check account permissions and company assignment</li>
-                        </ul>
-                    </div>
-
-                    <h3>Currency Mismatch</h3>
-                    <div class="alert alert-warning">
-                        <strong>Problem:</strong> Currency validation errors during sync
-                        <br><strong>Solutions:</strong>
-                        <ul>
-                            <li>Ensure bank account currency matches transaction currency</li>
-                            <li>Enable multi-currency accounting in ERPNext</li>
-                            <li>Check currency codes are standard ISO format</li>
-                        </ul>
-                    </div>
-
-                    <h2>Advanced Configuration</h2>
-
-                    <h3>Custom Mapping Logic</h3>
-                    <p>For advanced users, you can customize the mapping logic by modifying the <code>get_bank_account_for_currency</code> function in <code>utils.py</code>.</p>
-
-                    <pre><code>def get_bank_account_for_currency(currency):
-    """Custom logic for bank account mapping"""
-
-    # Your custom mapping logic here
-    if currency == "USD" and is_weekend():
-        return "Weekend USD Account"
-
-    # Default mapping logic
-    return default_mapping_logic(currency)</code></pre>
-
-                    <div style="margin-top: 40px; text-align: center;">
-                        <a href="/docs/troubleshooting" class="btn btn-primary">Next: Troubleshooting →</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+<div style="margin-top: 40px; text-align: center;">
+    <a href="/docs/troubleshooting" class="btn btn-primary">Next: Troubleshooting →</a>
 </div>
 {% endblock %}

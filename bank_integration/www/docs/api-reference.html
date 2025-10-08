@@ -1,61 +1,22 @@
-{% extends "templates/web.html" %}
+{% extends "templates/docs_page.html" %}
 
 {% block title %}API Reference - Bank Integration Documentation{% endblock %}
 
-{% block head_include %}
-<link rel="stylesheet" href="/assets/bank_integration/css/docs.css">
-{% endblock %}
+{% block page_title %}API Reference{% endblock %}
+{% block page_subtitle %}Technical documentation for developers{% endblock %}
 
-{% block content %}
-<div class="docs-container">
-    <div class="docs-header">
-        <div class="container">
-            <h1 class="docs-title">API Reference</h1>
-            <p class="docs-subtitle">Technical documentation for developers</p>
-        </div>
-    </div>
+{% block page_content %}
+<h1>API Reference</h1>
 
-    <div class="container">
-        <div class="row">
-            <div class="col-md-3">
-                <div class="docs-sidebar">
-                    <nav class="docs-nav">
-                        <h5>Getting Started</h5>
-                        <ul>
-                            <li><a href="/docs/installation">Installation</a></li>
-                            <li><a href="/docs/setup">Setup & Configuration</a></li>
-                        </ul>
+<p>This section provides technical documentation for developers working with the Bank Integration app.</p>
 
-                        <h5>User Guide</h5>
-                        <ul>
-                            <li><a href="/docs/user-guide">User Guide</a></li>
-                            <li><a href="/docs/transaction-sync">Transaction Sync</a></li>
-                        </ul>
+<h2>Core Classes</h2>
 
-                        <h5>Developer Guide</h5>
-                        <ul>
-                            <li><a href="/docs/api-reference" class="active">API Reference</a></li>
-                            <li><a href="/docs/customization">Customization</a></li>
-                            <li><a href="/docs/development">Development</a></li>
-                            <li><a href="/docs/contributing">Contributing</a></li>
-                        </ul>
-                    </nav>
-                </div>
-            </div>
+<h3>BankIntegrationSetting</h3>
+<p>Main configuration document for bank integration settings.</p>
 
-            <div class="col-md-9">
-                <div class="docs-content">
-                    <h1>API Reference</h1>
-
-                    <p>This section provides technical documentation for developers working with the Bank Integration app.</p>
-
-                    <h2>Core Classes</h2>
-
-                    <h3>BankIntegrationSetting</h3>
-                    <p>Main configuration document for bank integration settings.</p>
-
-                    <h4>Methods</h4>
-                    <pre><code>@frappe.whitelist()
+<h4>Methods</h4>
+<pre><code>@frappe.whitelist()
 def start_transaction_sync(self):
     """Start background job for syncing transactions"""
 
@@ -76,10 +37,10 @@ def is_enabled(self):
 def update_sync_progress(self, processed, total, status):
     """Update sync progress indicators"""</code></pre>
 
-                    <h3>AirwallexBase</h3>
-                    <p>Base class for all Airwallex API interactions.</p>
+<h3>AirwallexBase</h3>
+<p>Base class for all Airwallex API interactions.</p>
 
-                    <pre><code>class AirwallexBase:
+<pre><code>class AirwallexBase:
     def __init__(self, use_auth_headers=False):
         """Initialize with optional authentication headers"""
 
@@ -89,18 +50,18 @@ def update_sync_progress(self, processed, total, status):
     def authenticate_and_cache_token(self):
         """Authenticate and cache the token"""</code></pre>
 
-                    <h3>FinancialTransactions</h3>
-                    <p>Handles Airwallex financial transaction API calls.</p>
+<h3>FinancialTransactions</h3>
+<p>Handles Airwallex financial transaction API calls.</p>
 
-                    <pre><code>class FinancialTransactions(AirwallexBase):
+<pre><code>class FinancialTransactions(AirwallexBase):
     def get_list(self, from_created_at=None, to_created_at=None,
                  page_num=0, page_size=100):
         """Get list of financial transactions"""</code></pre>
 
-                    <h2>Utility Functions</h2>
+<h2>Utility Functions</h2>
 
-                    <h3>Transaction Mapping</h3>
-                    <pre><code>def map_airwallex_to_erpnext(airwallex_txn):
+<h3>Transaction Mapping</h3>
+<pre><code>def map_airwallex_to_erpnext(airwallex_txn):
     """Map Airwallex transaction to ERPNext Bank Transaction format"""
 
 def get_bank_account_for_currency(currency):
@@ -109,22 +70,22 @@ def get_bank_account_for_currency(currency):
 def transaction_exists(transaction_id):
     """Check if a Bank Transaction with the given Airwallex source ID exists"""</code></pre>
 
-                    <h3>Logging</h3>
-                    <pre><code>def create_log(message, status="Info", response=None, method=None,
+<h3>Logging</h3>
+<pre><code>def create_log(message, status="Info", response=None, method=None,
                payload=None, url=None, status_code=None):
     """Create log entry for connection test"""</code></pre>
 
-                    <h2>Background Jobs</h2>
+<h2>Background Jobs</h2>
 
-                    <h3>Sync Functions</h3>
-                    <pre><code>def sync_transactions(from_date, to_date, setting_name):
+<h3>Sync Functions</h3>
+<pre><code>def sync_transactions(from_date, to_date, setting_name):
     """Sync transactions from Airwallex to ERPNext Bank Transactions"""
 
 def sync_scheduled_transactions(setting_name, schedule_type):
     """Sync transactions based on schedule type"""</code></pre>
 
-                    <h3>Scheduler Events</h3>
-                    <pre><code># hooks.py
+<h3>Scheduler Events</h3>
+<pre><code># hooks.py
 scheduler_events = {
     "hourly": ["bank_integration.airwallex.scheduler.run_hourly_sync"],
     "daily": ["bank_integration.airwallex.scheduler.run_daily_sync"],
@@ -132,167 +93,66 @@ scheduler_events = {
     "monthly": ["bank_integration.airwallex.scheduler.run_monthly_sync"]
 }</code></pre>
 
-                    <h2>Data Models</h2>
+<h2>Data Models</h2>
 
-                    <h3>Bank Integration Setting Fields</h3>
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th>Field</th>
-                                <th>Type</th>
-                                <th>Description</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>enable_airwallex</td>
-                                <td>Check</td>
-                                <td>Enable/disable Airwallex integration</td>
-                            </tr>
-                            <tr>
-                                <td>client_id</td>
-                                <td>Data</td>
-                                <td>Airwallex Client ID</td>
-                            </tr>
-                            <tr>
-                                <td>api_key</td>
-                                <td>Password</td>
-                                <td>Airwallex API Key</td>
-                            </tr>
-                            <tr>
-                                <td>api_url</td>
-                                <td>Data</td>
-                                <td>Airwallex API endpoint URL</td>
-                            </tr>
-                            <tr>
-                                <td>sync_schedule</td>
-                                <td>Select</td>
-                                <td>Automatic sync frequency</td>
-                            </tr>
-                            <tr>
-                                <td>sync_status</td>
-                                <td>Select</td>
-                                <td>Current sync status</td>
-                            </tr>
-                            <tr>
-                                <td>from_date</td>
-                                <td>Date</td>
-                                <td>Start date for historical sync</td>
-                            </tr>
-                            <tr>
-                                <td>to_date</td>
-                                <td>Date</td>
-                                <td>End date for historical sync</td>
-                            </tr>
-                        </tbody>
-                    </table>
+<h3>Bank Integration Setting Fields</h3>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Field</th>
+            <th>Type</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>enable_airwallex</td>
+            <td>Check</td>
+            <td>Enable/disable Airwallex integration</td>
+        </tr>
+        <tr>
+            <td>client_id</td>
+            <td>Data</td>
+            <td>Airwallex Client ID</td>
+        </tr>
+        <tr>
+            <td>api_key</td>
+            <td>Password</td>
+            <td>Airwallex API Key</td>
+        </tr>
+        <tr>
+            <td>api_url</td>
+            <td>Data</td>
+            <td>Airwallex API endpoint URL</td>
+        </tr>
+        <tr>
+            <td>sync_schedule</td>
+            <td>Select</td>
+            <td>Automatic sync frequency</td>
+        </tr>
+        <tr>
+            <td>sync_status</td>
+            <td>Select</td>
+            <td>Current sync status</td>
+        </tr>
+        <tr>
+            <td>from_date</td>
+            <td>Date</td>
+            <td>Start date for historical sync</td>
+        </tr>
+        <tr>
+            <td>to_date</td>
+            <td>Date</td>
+            <td>End date for historical sync</td>
+        </tr>
+    </tbody>
+</table>
 
-                    <h3>Bank Integration Log Fields</h3>
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th>Field</th>
-                                <th>Type</th>
-                                <th>Description</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>title</td>
-                                <td>Data</td>
-                                <td>Log entry title</td>
-                            </tr>
-                            <tr>
-                                <td>status</td>
-                                <td>Data</td>
-                                <td>Log status (Info, Success, Error, Warning)</td>
-                            </tr>
-                            <tr>
-                                <td>message</td>
-                                <td>Small Text</td>
-                                <td>Detailed log message</td>
-                            </tr>
-                            <tr>
-                                <td>method</td>
-                                <td>Small Text</td>
-                                <td>API method called</td>
-                            </tr>
-                            <tr>
-                                <td>url</td>
-                                <td>Small Text</td>
-                                <td>API endpoint URL</td>
-                            </tr>
-                            <tr>
-                                <td>request_data</td>
-                                <td>Code</td>
-                                <td>Request payload (JSON)</td>
-                            </tr>
-                            <tr>
-                                <td>response_data</td>
-                                <td>Code</td>
-                                <td>Response data (JSON)</td>
-                            </tr>
-                        </tbody>
-                    </table>
+<h2>Real-time Updates</h2>
 
-                    <h2>Custom Fields</h2>
+<p>Progress updates are sent via Frappe's real-time system:</p>
 
-                    <p>The app adds custom fields to the Bank Transaction doctype:</p>
-
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th>Field</th>
-                                <th>Type</th>
-                                <th>Description</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>airwallex_source_id</td>
-                                <td>Data</td>
-                                <td>Original Airwallex transaction ID</td>
-                            </tr>
-                            <tr>
-                                <td>airwallex_source_type</td>
-                                <td>Data</td>
-                                <td>Airwallex transaction type</td>
-                            </tr>
-                        </tbody>
-                    </table>
-
-                    <h2>Error Handling</h2>
-
-                    <h3>Common Exceptions</h3>
-                    <pre><code># Authentication errors
-if not auth_response or not auth_response.get('token'):
-    frappe.throw("Failed to authenticate with Airwallex API")
-
-# Missing configuration
-if not self.from_date or not self.to_date:
-    frappe.throw("From and To dates are required for syncing old transactions")
-
-# Validation errors
-if self.from_date > self.to_date:
-    frappe.throw("From date cannot be greater than To date")</code></pre>
-
-                    <h2>Caching</h2>
-
-                    <p>The app uses Redis caching for API tokens:</p>
-
-                    <pre><code># Cache authentication token
-frappe.cache.setex("airwallex_bearer_token", 3600, token)
-frappe.cache.setex("airwallex_token_expires_at", 3600, expires_at)
-
-# Retrieve cached token
-cached_token = frappe.cache.get_value("airwallex_bearer_token")
-expires_at = frappe.cache.get_value("airwallex_token_expires_at")</code></pre>
-
-                    <h2>Real-time Updates</h2>
-
-                    <p>Progress updates are sent via Frappe's real-time system:</p>
-
-                    <pre><code># Send progress update
+<pre><code># Send progress update
 frappe.publish_realtime('transaction_sync_progress', {
     'processed': total_processed,
     'total': total_transactions,
@@ -309,12 +169,7 @@ frappe.publish_realtime('transaction_sync_complete', {
     'message': completion_message
 }, user=frappe.session.user)</code></pre>
 
-                    <div style="margin-top: 40px; text-align: center;">
-                        <a href="/docs/development" class="btn btn-primary">Next: Development Guide →</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+<div style="margin-top: 40px; text-align: center;">
+    <a href="/docs/development" class="btn btn-primary">Next: Development Guide →</a>
 </div>
 {% endblock %}

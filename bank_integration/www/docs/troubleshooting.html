@@ -1,0 +1,258 @@
+{% extends "templates/docs_page.html" %}
+
+{% block title %}Troubleshooting - Bank Integration Documentation{% endblock %}
+
+{% block page_title %}Troubleshooting{% endblock %}
+{% block page_subtitle %}Common issues and solutions{% endblock %}
+
+{% block page_content %}
+<h1>Troubleshooting</h1>
+
+<p>This guide covers common issues you might encounter with the Bank Integration app and their solutions.</p>
+
+<h2>Authentication Issues</h2>
+
+<h3>401 Unauthorized Error</h3>
+<div class="alert alert-warning">
+    <h4>Problem:</h4>
+    <p>Authentication test fails with 401 Unauthorized error.</p>
+
+    <h4>Solutions:</h4>
+    <ul>
+        <li>Verify your Client ID and API Key are correct</li>
+        <li>Check for extra spaces or hidden characters in credentials</li>
+        <li>Ensure you're using the correct API URL for your environment</li>
+        <li>Confirm your Airwallex account is active and verified</li>
+    </ul>
+</div>
+
+<h3>403 Forbidden Error</h3>
+<div class="alert alert-warning">
+    <h4>Problem:</h4>
+    <p>API requests fail with 403 Forbidden error.</p>
+
+    <h4>Solutions:</h4>
+    <ul>
+        <li>Check your application permissions in Airwallex developer portal</li>
+        <li>Ensure "Financial Transactions" scope is enabled</li>
+        <li>Verify your account has access to the requested resources</li>
+        <li>Contact Airwallex support to verify your account permissions</li>
+    </ul>
+</div>
+
+<h2>Sync Issues</h2>
+
+<h3>Sync Stuck in Progress</h3>
+<div class="alert alert-warning">
+    <h4>Problem:</h4>
+    <p>Sync status shows "In Progress" but no activity for extended period.</p>
+
+    <h4>Solutions:</h4>
+    <ul>
+        <li>Click "Restart Transaction Sync" to reset the sync</li>
+        <li>Check background job queue: <code>bench show-pending-jobs</code></li>
+        <li>Restart Redis: <code>sudo systemctl restart redis</code></li>
+        <li>Restart workers: <code>bench restart</code></li>
+    </ul>
+</div>
+
+<h3>No Transactions Being Synced</h3>
+<div class="alert alert-warning">
+    <h4>Problem:</h4>
+    <p>Sync completes successfully but no transactions appear in ERPNext.</p>
+
+    <h4>Solutions:</h4>
+    <ul>
+        <li>Verify bank account mappings are configured correctly</li>
+        <li>Check if transactions exist in Airwallex for the date range</li>
+        <li>Ensure bank accounts exist in ERPNext Chart of Accounts</li>
+        <li>Review logs for mapping errors or API issues</li>
+    </ul>
+</div>
+
+<h3>Duplicate Transactions</h3>
+<div class="alert alert-warning">
+    <h4>Problem:</h4>
+    <p>Same transactions appear multiple times in ERPNext.</p>
+
+    <h4>Solutions:</h4>
+    <ul>
+        <li>Check for overlapping sync date ranges</li>
+        <li>Verify the duplicate detection logic is working</li>
+        <li>Delete duplicate transactions manually if needed</li>
+        <li>Avoid running multiple syncs simultaneously</li>
+    </ul>
+</div>
+
+<h2>Bank Account Mapping Issues</h2>
+
+<h3>Bank Account Not Found</h3>
+<div class="alert alert-warning">
+    <h4>Problem:</h4>
+    <p>Error: "Bank account not found for currency [XXX]"</p>
+
+    <h4>Solutions:</h4>
+    <ul>
+        <li>Create the missing bank account in ERPNext (Accounting → Bank Account)</li>
+        <li>Add proper mapping in Bank Integration Setting</li>
+        <li>Ensure account name matches exactly in the mapping</li>
+        <li>Check account is assigned to the correct company</li>
+    </ul>
+</div>
+
+<h3>Transactions in Wrong Accounts</h3>
+<div class="alert alert-warning">
+    <h4>Problem:</h4>
+    <p>Transactions appear in unexpected bank accounts.</p>
+
+    <h4>Solutions:</h4>
+    <ul>
+        <li>Review and correct bank account mappings</li>
+        <li>Ensure currency codes match exactly (USD, EUR, GBP)</li>
+        <li>Check for typos in account names</li>
+        <li>Update mappings and re-sync if necessary</li>
+    </ul>
+</div>
+
+<h2>Performance Issues</h2>
+
+<h3>Slow Sync Performance</h3>
+<div class="alert alert-warning">
+    <h4>Problem:</h4>
+    <p>Transaction sync takes too long to complete.</p>
+
+    <h4>Solutions:</h4>
+    <ul>
+        <li>Reduce date range for sync operations</li>
+        <li>Sync in smaller batches (e.g., weekly instead of monthly)</li>
+        <li>Check server resources (CPU, memory, disk space)</li>
+        <li>Optimize database performance with proper indexing</li>
+    </ul>
+</div>
+
+<h3>High Memory Usage</h3>
+<div class="alert alert-warning">
+    <h4>Problem:</h4>
+    <p>System runs out of memory during large syncs.</p>
+
+    <h4>Solutions:</h4>
+    <ul>
+        <li>Increase server memory allocation</li>
+        <li>Process transactions in smaller batches</li>
+        <li>Monitor memory usage during sync operations</li>
+        <li>Consider upgrading server specifications</li>
+    </ul>
+</div>
+
+<h2>Network and Connectivity Issues</h2>
+
+<h3>Connection Timeout</h3>
+<div class="alert alert-warning">
+    <h4>Problem:</h4>
+    <p>API requests timeout or fail to connect.</p>
+
+    <h4>Solutions:</h4>
+    <ul>
+        <li>Check internet connectivity</li>
+        <li>Verify firewall settings allow outbound HTTPS connections</li>
+        <li>Test connection to Airwallex API manually</li>
+        <li>Contact your network administrator about proxy settings</li>
+    </ul>
+</div>
+
+<h3>SSL Certificate Issues</h3>
+<div class="alert alert-warning">
+    <h4>Problem:</h4>
+    <p>SSL certificate verification fails.</p>
+
+    <h4>Solutions:</h4>
+    <ul>
+        <li>Update system certificates: <code>sudo apt-get update && sudo apt-get install ca-certificates</code></li>
+        <li>Check system time is correct</li>
+        <li>Verify DNS resolution for api.airwallex.com</li>
+    </ul>
+</div>
+
+<h2>Data Issues</h2>
+
+<h3>Currency Mismatch</h3>
+<div class="alert alert-warning">
+    <h4>Problem:</h4>
+    <p>Transactions have incorrect currency information.</p>
+
+    <h4>Solutions:</h4>
+    <ul>
+        <li>Verify currency mappings in Bank Integration Setting</li>
+        <li>Check Airwallex account currency settings</li>
+        <li>Ensure ERPNext bank accounts have correct currencies</li>
+        <li>Review transaction data from Airwallex API directly</li>
+    </ul>
+</div>
+
+<h3>Missing Transaction Details</h3>
+<div class="alert alert-warning">
+    <h4>Problem:</h4>
+    <p>Synced transactions lack description or reference information.</p>
+
+    <h4>Solutions:</h4>
+    <ul>
+        <li>Check if Airwallex provides the missing information</li>
+        <li>Review field mapping configuration</li>
+        <li>Verify API response includes expected fields</li>
+        <li>Update mapping logic if needed</li>
+    </ul>
+</div>
+
+<h2>Logging and Debugging</h2>
+
+<h3>Enable Detailed Logging</h3>
+<p>To troubleshoot issues effectively:</p>
+<ol>
+    <li>Enable logging in Bank Integration Setting</li>
+    <li>Check logs in Bank Integration Log doctype</li>
+    <li>Review Frappe logs: <code>tail -f logs/worker.log</code></li>
+    <li>Monitor Redis logs for background job issues</li>
+</ol>
+
+<h3>Useful Commands</h3>
+<pre><code># Check background jobs
+bench show-pending-jobs
+
+# Check worker status
+bench doctor
+
+# Restart all services
+bench restart
+
+# Check logs
+tail -f logs/web.log
+tail -f logs/worker.log
+tail -f logs/schedule.log
+
+# Test Redis connection
+redis-cli ping</code></pre>
+
+<h2>Getting Help</h2>
+
+<h3>Support Channels</h3>
+<ul>
+    <li><strong>GitHub Issues:</strong> <a href="https://github.com/Akhilam-Inc/erpnext_airwallex_integration/issues" target="_blank">Report bugs and feature requests</a></li>
+    <li><strong>Documentation:</strong> Review this documentation for common solutions</li>
+    <li><strong>Logs:</strong> Check Bank Integration Log for detailed error messages</li>
+    <li><strong>Community:</strong> Frappe community forums for general ERPNext questions</li>
+</ul>
+
+<h3>When Reporting Issues</h3>
+<p>Please include the following information:</p>
+<ul>
+    <li>ERPNext and Frappe version</li>
+    <li>Bank Integration app version</li>
+    <li>Detailed error messages from logs</li>
+    <li>Steps to reproduce the issue</li>
+    <li>Relevant configuration settings (without sensitive data)</li>
+</ul>
+
+<div style="margin-top: 40px; text-align: center;">
+    <a href="/docs/faq" class="btn btn-primary">Next: FAQ →</a>
+</div>
+{% endblock %}
