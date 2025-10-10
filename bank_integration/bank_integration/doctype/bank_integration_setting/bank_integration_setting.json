@@ -24,13 +24,11 @@
   "processed_records",
   "airwallex_tab",
   "api_details_section",
-  "client_id",
   "api_url",
   "column_break_jikw",
-  "api_key",
   "file_url",
-  "section_break_fdvj",
-  "bank_account_mappings"
+  "section_break_okwh",
+  "airwallex_clients"
  ],
  "fields": [
   {
@@ -49,18 +47,8 @@
    "label": "API Details"
   },
   {
-   "fieldname": "client_id",
-   "fieldtype": "Data",
-   "label": "Client ID"
-  },
-  {
    "fieldname": "column_break_jikw",
    "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "api_key",
-   "fieldtype": "Password",
-   "label": "API Key"
   },
   {
    "fieldname": "sync_options_section",
@@ -108,7 +96,7 @@
    "fieldname": "sync_status",
    "fieldtype": "Select",
    "label": "Sync Status",
-   "options": "Not Started\nIn Progress\nCompleted\nFailed",
+   "options": "Not Started\nIn Progress\nCompleted\nCompleted with Errors\nFailed",
    "read_only": 1
   },
   {
@@ -145,16 +133,6 @@
    "label": "Airwallex"
   },
   {
-   "fieldname": "section_break_fdvj",
-   "fieldtype": "Section Break"
-  },
-  {
-   "fieldname": "bank_account_mappings",
-   "fieldtype": "Table",
-   "label": "Bank Account Mappings",
-   "options": "Airwallex Bank Account Mapping"
-  },
-  {
    "depends_on": "eval:doc.sync_old_transactions",
    "fieldname": "from_date",
    "fieldtype": "Date",
@@ -174,13 +152,23 @@
    "fieldtype": "Select",
    "label": "Sync Schedule",
    "options": "Hourly\nDaily\nWeekly\nMonthly"
+  },
+  {
+   "fieldname": "section_break_okwh",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "airwallex_clients",
+   "fieldtype": "Table",
+   "label": "Clients",
+   "options": "Airwallex Client"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-10-08 05:02:26.595388",
+ "modified": "2025-10-08 19:55:18.498480",
  "modified_by": "Administrator",
  "module": "Bank Integration",
  "name": "Bank Integration Setting",

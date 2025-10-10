@@ -8,9 +8,6 @@ from frappe.utils.background_jobs import enqueue
 from frappe.utils import add_days, add_months, get_datetime, now_datetime
 from frappe.utils.scheduler import is_scheduler_inactive
 
-AUTH_ROUTE = '/api/v1/authentication/login'
-
-
 class BankIntegrationSetting(Document):
     # begin: auto-generated types
     # This code is auto-generated. Do not modify anything in this block.
@@ -18,13 +15,11 @@ class BankIntegrationSetting(Document):
     from typing import TYPE_CHECKING
 
     if TYPE_CHECKING:
-        from bank_integration.bank_integration.doctype.airwallex_bank_account_mapping.airwallex_bank_account_mapping import AirwallexBankAccountMapping
+        from bank_integration.bank_integration.doctype.airwallex_client.airwallex_client import AirwallexClient
         from frappe.types import DF
 
-        api_key: DF.Password | None
+        airwallex_clients: DF.Table[AirwallexClient]
         api_url: DF.Data | None
-        bank_account_mappings: DF.Table[AirwallexBankAccountMapping]
-        client_id: DF.Data | None
         enable_airwallex: DF.Check
         enable_log: DF.Check
         file_url: DF.Data | None
@@ -34,7 +29,7 @@ class BankIntegrationSetting(Document):
         sync_old_transactions: DF.Check
         sync_progress: DF.Percent
         sync_schedule: DF.Literal["Hourly", "Daily", "Weekly", "Monthly"]
-        sync_status: DF.Literal["Not Started", "In Progress", "Completed", "Failed"]
+        sync_status: DF.Literal["Not Started", "In Progress", "Completed", "Completed with Errors", "Failed"]
         to_date: DF.Date | None
         total_records: DF.Int
     # end: auto-generated types
@@ -43,28 +38,115 @@ class BankIntegrationSetting(Document):
         return bool(self.enable_airwallex)
 
     def validate(self): # Temporarily disable Airwallex integration
-        if self.is_enabled():
-            self.test_authentication()
+        """Validate settings and test authentication if enabled"""
+        if self.enable_airwallex:
+            # Test authentication and disable if it fails
+            authentication_successful = self.test_authentication_silent()
+            if not authentication_successful:
+                self.enable_airwallex = 0
+                frappe.msgprint(
+                    "❌ Authentication failed for one or more clients. Airwallex integration has been disabled.",
+                    indicator="red",
+                    alert=True
+                )
 
     def on_update(self):
         """Trigger sync job when sync_old_transactions is enabled"""
         if self.sync_old_transactions and self.sync_status == "Not Started":
             self.start_transaction_sync()
 
-    def test_authentication(self):
-        """Test authentication with Airwallex API"""
-        try:
-            api = AirwallexAuthenticator()
-            response = api.authenticate()
+    # Add method to get client configurations
+    def get_airwallex_clients(self):
+        """Get all configured Airwallex clients"""
+        return [client for client in self.airwallex_clients if client.airwallex_client_id and client.bank_account]
 
-            if response and response.get('token'):
-                frappe.msgprint("Airwallex authentication successful!", indicator="green")
-            else:
-                frappe.throw("Authentication failed. Please check your credentials.")
-        except Exception as e:
-            import traceback
-            frappe.msgprint(f"Bank Integration failed. Please check your credentials. {e}", indicator="red")
-            frappe.log_error(traceback.format_exc(), "Airwallex Authentication Error")
+    def test_authentication_silent(self):
+        """Test authentication without showing messages - returns True/False"""
+        if not self.airwallex_clients:
+            return False
+
+        success_count = 0
+        total_clients = len(self.airwallex_clients)
+
+        for client in self.airwallex_clients:
+            try:
+                api = AirwallexAuthenticator(
+                    client_id=client.airwallex_client_id,
+                    api_key=client.get_password("airwallex_api_key"),
+                    api_url=self.api_url
+                )
+                response = api.authenticate()
+
+                if response and response.get('token'):
+                    success_count += 1
+
+            except Exception as e:
+                # Log the error but don't show message
+                frappe.log_error(
+                    f"Authentication failed for client {client.airwallex_client_id}: {str(e)}",
+                    "Silent Authentication Test"
+                )
+
+        return success_count == total_clients
+
+    def test_authentication(self):
+        """Test authentication for all configured clients with user feedback"""
+        if not self.airwallex_clients:
+            frappe.throw("Please configure at least one Airwallex client")
+
+        success_count = 0
+        total_clients = len(self.airwallex_clients)
+        failed_clients = []
+
+        for client in self.airwallex_clients:
+            try:
+                api = AirwallexAuthenticator(
+                    client_id=client.airwallex_client_id,
+                    api_key=client.get_password("airwallex_api_key"),
+                    api_url=self.api_url
+                )
+                response = api.authenticate()
+
+                if response and response.get('token'):
+                    success_count += 1
+                    frappe.msgprint(
+                        f"✅ Authentication successful for client {client.airwallex_client_id}",
+                        indicator="green",
+                        realtime=True,
+                        alert=False
+                    )
+                else:
+                    failed_clients.append(client.airwallex_client_id)
+                    frappe.msgprint(
+                        f"❌ Authentication failed for client {client.airwallex_client_id}",
+                        indicator="red"
+                    )
+            except Exception as e:
+                failed_clients.append(client.airwallex_client_id)
+                frappe.msgprint(
+                    f"❌ Authentication failed for client {client.airwallex_client_id}: {str(e)}",
+                    indicator="red"
+                )
+
+        if success_count == total_clients:
+            frappe.msgprint(
+                f"🎉 All {total_clients} Airwallex clients authenticated successfully!",
+                indicator="green",
+                realtime=True,
+                alert=False
+            )
+            return True
+        else:
+            error_message = f"⚠️ {success_count}/{total_clients} clients authenticated successfully"
+            if failed_clients:
+                error_message += f"\nFailed clients: {', '.join(failed_clients)}"
+
+            frappe.msgprint(
+                error_message,
+                indicator="orange",
+                realtime=True,
+                alert=False
+            )
             return False
 
     @frappe.whitelist()
@@ -96,7 +178,7 @@ class BankIntegrationSetting(Document):
 
         frappe.msgprint(
             "Transaction sync job has been started. You can monitor the progress from this page.",
-            indicator="blue"
+            indicator="blue", alert=False
         )
 
     @frappe.whitelist()
@@ -123,7 +205,7 @@ class BankIntegrationSetting(Document):
 
             frappe.msgprint(
                 "Transaction sync has been marked as stopped. The background job may take a moment to complete.",
-                indicator="orange"
+                indicator="orange", alert=False
             )
 
         except Exception as e:

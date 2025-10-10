@@ -1,159 +1,139 @@
 import frappe
 from bank_integration.airwallex.api.financial_transactions import FinancialTransactions
+from bank_integration.airwallex.api.base_api import AirwallexAPIError  # Add this import
 from bank_integration.airwallex.utils import map_airwallex_to_erpnext
-from  bank_integration.bank_integration.doctype.bank_integration_log import bank_integration_log as bi_log
+from bank_integration.bank_integration.doctype.bank_integration_log import bank_integration_log as bi_log
 from datetime import datetime
 import traceback
 
 
 def sync_transactions(from_date, to_date, setting_name):
-    """
-    Sync transactions from Airwallex to ERPNext Bank Transactions
-    """
-    setting = None
-    bi_log.create_log(f"Starting transaction sync from {from_date} to {to_date}")
-    try:
-        # Get the setting document first
-        setting = frappe.get_doc("Bank Integration Setting", setting_name)
+    """Sync transactions for all configured clients"""
+    settings = frappe.get_doc("Bank Integration Setting", setting_name)
 
-        # Initialize the API
-        ft_api = FinancialTransactions()
+    if not settings.airwallex_clients:
+        frappe.throw("No Airwallex clients configured")
 
-        # Initialize counters
-        page_num = 0
-        page_size = 100
-        total_processed = 0
-        total_created = 0
-        total_errors = 0
+    total_processed = 0
+    total_created = 0
 
-        # Convert dates to ISO format for API
-        from_created_at = from_date  # Just the date: "2025-10-06"
-        to_created_at = to_date      # Just the date: "2025-10-08"
-
-        frappe.logger().info(f"Starting transaction sync from {from_date} to {to_date}")
-
-        # Update initial status
-        setting.update_sync_progress(0, 0, "In Progress")
-
-        while True:
-            # Get transactions from Airwallex
-            response = ft_api.get_list(
-                from_created_at=from_created_at,
-                to_created_at=to_created_at,
-                page_num=page_num,
-                page_size=page_size
+    for client in settings.airwallex_clients:
+        try:
+            # Sync transactions for this specific client
+            processed, created = sync_client_transactions(
+                client, from_date, to_date, settings
             )
+            total_processed += processed
+            total_created += created
 
-            if not response or not response.get('items'):
-                break
+        except Exception as e:
+            # Shorten the error message for the log title
+            client_short = client.airwallex_client_id[:8] if client.airwallex_client_id else "unknown"
+            error_title = f"Sync Error - Client {client_short}"
 
-            transactions = response.get('items', [])
-            has_more = response.get('has_more', False)
+            # Create detailed error message (truncated to avoid length issues)
+            error_message = f"Failed to sync transactions for client {client.airwallex_client_id}: {str(e)[:500]}"
 
-            # Process each transaction
-            for txn in transactions:
-                try:
-                    # Check if transaction already exists using the correct field
-                    if transaction_exists(txn.get('id')):
-                        frappe.logger().info(f"Transaction {txn.get('id')} already exists, skipping")
-                        total_processed += 1
-                        continue
+            frappe.log_error(error_message, error_title)
 
-                    # Map and create ERPNext Bank Transaction
-                    erpnext_txn = map_airwallex_to_erpnext(txn)
+            # Also log to Bank Integration Log
+            try:
+                bi_log.create_log(
+                    f"Sync failed for client {client.airwallex_client_id}: {str(e)[:200]}",
+                    status="Error"
+                )
+            except Exception as log_error:
+                frappe.logger().error(f"Failed to create integration log: {str(log_error)}")
 
-                    # Create the Bank Transaction document
-                    bank_txn_doc = frappe.get_doc(erpnext_txn)
+    # Update final status
+    settings.update_sync_progress(total_processed, total_processed, "Completed")
+
+
+def sync_client_transactions(client, from_date, to_date, settings):
+    """Sync transactions for a specific client"""
+    try:
+        # Check how FinancialTransactions should be initialized
+        # Option 1: If it accepts no parameters
+        api = FinancialTransactions()
+
+        # Set credentials manually
+        api.client_id = client.airwallex_client_id
+        api.api_key = client.get_password("airwallex_api_key")
+        api.api_url = settings.api_url
+
+        # Initialize headers if needed
+        if hasattr(api, '_initialize_headers'):
+            api._initialize_headers()
+
+        # OR Option 2: If it accepts different parameters, check the constructor:
+        # api = FinancialTransactions(
+        #     api_url=settings.api_url,
+        #     client_credentials={
+        #         'client_id': client.airwallex_client_id,
+        #         'api_key': client.get_password("airwallex_api_key")
+        #     }
+        # )
+
+        # Force fresh authentication for sync operations
+        if hasattr(api, 'ensure_authenticated_headers'):
+            api.ensure_authenticated_headers(force_fresh=True)
+
+        transactions = api.get_list(from_created_at=from_date, to_created_at=to_date)
+        processed = 0
+        created = 0
+
+        if not transactions:
+            return 0, 0
+
+        # Handle different response formats
+        if isinstance(transactions, dict):
+            # If the response is paginated or wrapped
+            transactions = transactions.get('items', transactions.get('data', []))
+
+        for txn in transactions:
+            try:
+                if not transaction_exists(txn.get('id')) and txn.get('currency') == "AUD": # Only sync AUD transactions temporarily
+                    # Map transaction to client's bank account
+                    bank_txn = map_airwallex_to_erpnext(txn, client.bank_account)
+                    bank_txn_doc = frappe.get_doc(bank_txn)
                     bank_txn_doc.insert()
+                    created += 1
 
-                    total_created += 1
-                    total_processed += 1
+                processed += 1
 
-                    frappe.logger().info(f"Created Bank Transaction: {bank_txn_doc.name}")
+                # Update progress periodically (every 10 transactions)
+                if processed % 10 == 0:
+                    settings.update_sync_progress(processed, len(transactions))
 
-                except Exception as e:
-                    total_errors += 1
-                    total_processed += 1
-                    frappe.logger().error(f"Error processing transaction {txn.get('id')}: {str(e)}")
-                    frappe.log_error(traceback.format_exc(), f"Transaction Sync Error - {txn.get('id')}")
+            except Exception as txn_error:
+                client_short = client.airwallex_client_id[:8]
+                frappe.log_error(
+                    f"Failed to process transaction {txn.get('id', 'unknown')}: {str(txn_error)[:300]}",
+                    f"Txn Error - {client_short}"
+                )
+                processed += 1  # Still count as processed even if failed
 
-            # Update progress (use processed as total since we don't have total count)
-            setting.update_sync_progress(total_processed, total_processed, "In Progress")
+        # Final progress update
+        if hasattr(settings, 'update_sync_progress'):
+            settings.update_sync_progress(processed, len(transactions))
 
-            # Check if there are more pages
-            if not has_more:
-                break
+        return processed, created
 
-            page_num += 1
-
-        # Final status update (fix the syntax error)
-        final_status = "Completed" if total_errors == 0 else "Completed with Errors"
-        setting.update_sync_progress(total_processed, total_processed, final_status)
-
-        # Log summary
-        frappe.logger().info(
-            f"Transaction sync completed. "
-            f"Processed: {total_processed}, Created: {total_created}, Errors: {total_errors}"
+    except AirwallexAPIError as e:
+        client_short = client.airwallex_client_id[:8] if client.airwallex_client_id else "unknown"
+        frappe.log_error(
+            f"API Error for client {client.airwallex_client_id}: {str(e.message)[:300]}",
+            f"API Error - {client_short}"
         )
-
-        # Send notification
-        frappe.publish_realtime(
-            'transaction_sync_complete',
-            {
-                'processed': total_processed,
-                'created': total_created,
-                'errors': total_errors,
-                'status': final_status,
-                'message': f"Sync completed successfully. Created {total_created} transactions."
-            },
-            user=frappe.session.user
-        )
+        return 0, 0
 
     except Exception as e:
-        # Update status to Failed
-        if setting:
-            setting.update_sync_progress(0, 0, "Failed")
-
-        error_msg = f"Transaction sync failed: {str(e)}"
-        frappe.log_error(traceback.format_exc(), "Transaction Sync Failed")
-        frappe.logger().error(error_msg)
-
-        # Send error notification
-        frappe.publish_realtime(
-            'transaction_sync_complete',
-            {
-                'processed': 0,
-                'created': 0,
-                'errors': 1,
-                'status': 'error',
-                'message': error_msg
-            },
-            user=frappe.session.user
+        client_short = client.airwallex_client_id[:8] if client.airwallex_client_id else "unknown"
+        frappe.log_error(
+            f"Sync failed for client {client.airwallex_client_id}: {str(e)[:300]}",
+            f"Sync Error - {client_short}"
         )
-
-
-def get_bank_account_lookup():
-    """
-    Build a lookup dictionary mapping funding_source_id to ERPNext Bank Account names
-
-    Returns:
-        dict: Mapping of funding_source_id to bank account names
-    """
-    # This is a placeholder - you'll need to implement based on how you store
-    # the mapping between Airwallex funding sources and ERPNext bank accounts
-
-    # Option 1: If you have a custom doctype for mapping
-    # bank_accounts = frappe.get_all(
-    #     "Airwallex Bank Account Mapping",
-    #     fields=["funding_source_id", "bank_account"]
-    # )
-    # return {account.funding_source_id: account.bank_account for account in bank_accounts}
-
-    # Option 2: Simple mapping (you can configure this)
-    return {
-        "99d23411-234-22dd-23po-13sd7c267b9e": "Airwallex CNY Account",
-        # Add more mappings as needed
-    }
+        return 0, 0
 
 
 def transaction_exists(transaction_id):
@@ -161,7 +141,7 @@ def transaction_exists(transaction_id):
     Check if a Bank Transaction with the given Airwallex source ID already exists
     """
     # Check using the custom field we added for Airwallex source ID
-    return frappe.db.exists("Bank Transaction", {"airwallex_source_id": transaction_id})
+    return frappe.db.exists("Bank Transaction", {"transaction_id": transaction_id})
 
 
 def sync_scheduled_transactions(setting_name, schedule_type):

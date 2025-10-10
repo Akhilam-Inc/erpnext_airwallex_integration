@@ -76,15 +76,42 @@
     <li><strong>Monthly:</strong> Syncs transactions once per month</li>
 </ul>
 
-<h2>4. Bank Account Mapping</h2>
+<h2>4. Airwallex Client Configuration</h2>
 
-<p>Map your Airwallex accounts to ERPNext bank accounts:</p>
+<p>Configure multiple Airwallex clients with their respective bank account mappings:</p>
 
 <ol>
-    <li>In the <strong>Bank Account Mappings</strong> section, click <strong>"Add Row"</strong></li>
-    <li>Select the appropriate ERPNext Bank Account</li>
-    <li>Enter the corresponding currency</li>
-    <li>Save the mapping</li>
+    <li>In the <strong>Airwallex</strong> tab, navigate to the <strong>Clients</strong> section</li>
+    <li>Click <strong>"Add Row"</strong> for each Airwallex client</li>
+    <li>Configure each client:
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Field</th>
+                    <th>Description</th>
+                    <th>Example</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Bank Account</strong></td>
+                    <td>ERPNext bank account for this client's transactions</td>
+                    <td>Airwallex USD - Company A</td>
+                </tr>
+                <tr>
+                    <td><strong>Airwallex Client ID</strong></td>
+                    <td>Client ID from Airwallex developer portal</td>
+                    <td>app_abc123def456</td>
+                </tr>
+                <tr>
+                    <td><strong>Airwallex API Key</strong></td>
+                    <td>API Key from Airwallex developer portal</td>
+                    <td>sk_live_abc123def456...</td>
+                </tr>
+            </tbody>
+        </table>
+    </li>
+    <li>Save the configuration</li>
 </ol>
 
 <div class="alert alert-warning">

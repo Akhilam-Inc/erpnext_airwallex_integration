@@ -18,7 +18,7 @@ def map_airwallex_status_to_erpnext(airwallex_status):
 
     return status_mapping.get(airwallex_status.upper(), "Pending")
 
-def map_airwallex_to_erpnext(txn,):
+def map_airwallex_to_erpnext(txn, bank_account):
     """
     Maps an Airwallex transaction to ERPNext Bank Transaction format.
 
@@ -39,7 +39,7 @@ def map_airwallex_to_erpnext(txn,):
         "doctype": "Bank Transaction",
         "date": txn.get("created_at", "")[:10],  # YYYY-MM-DD
         "status": map_airwallex_status_to_erpnext(txn.get("status", "PENDING")),
-        # "bank_account": bank_account_lookup.get(txn.get("funding_source_id"), "Unknown"),
+        "bank_account": bank_account,
         "currency": txn.get("currency", "USD"),
         "description": txn.get("description") or txn.get("source_type", ""),
         "reference_number": txn.get("batch_id", ""),
