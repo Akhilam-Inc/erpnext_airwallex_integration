@@ -162,7 +162,6 @@ def sync_scheduled_transactions(setting_name, schedule_type):
 
         # Set status to prevent concurrent runs
         setting.db_set('sync_status', 'In Progress')
-        setting.db_set('last_sync_date', frappe.utils.now())
 
         # Calculate date range based on schedule type
         end_date = frappe.utils.now_datetime()

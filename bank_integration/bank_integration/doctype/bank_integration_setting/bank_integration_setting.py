@@ -38,22 +38,34 @@ class BankIntegrationSetting(Document):
     def is_enabled(self):
         return bool(self.enable_airwallex)
 
-    def _to_iso8601(self, dt_value):
-        """Convert datetime to ISO8601 format for Airwallex API"""
-        if not dt_value:
+    def _to_iso8601(self, dt):
+        """Convert datetime to ISO8601 format in UTC timezone"""
+        try:
+            from frappe.utils import get_datetime
+            import pytz
+
+            if not dt:
+                return None
+
+            # Convert to datetime object if it's a string
+            if isinstance(dt, str):
+                dt = get_datetime(dt)
+
+            # If datetime is naive (no timezone info), assume it's in system timezone
+            if dt.tzinfo is None:
+                # Get system timezone from Frappe settings
+                system_tz = pytz.timezone(frappe.utils.get_system_timezone())
+                dt = system_tz.localize(dt)
+
+            # Convert to UTC
+            utc_dt = dt.astimezone(pytz.UTC)
+
+            # Format as ISO8601 with 'Z' suffix for UTC
+            return utc_dt.strftime('%Y-%m-%dT%H:%M:%SZ')
+
+        except Exception as e:
+            frappe.log_error(f"Error converting datetime to ISO8601: {str(e)}", "ISO8601 Conversion Error")
             return None
-
-        # If it's a string, parse it to datetime first
-        if isinstance(dt_value, str):
-            dt_value = get_datetime(dt_value)
-        elif isinstance(dt_value, datetime):
-            pass  # Already a datetime object
-        else:
-            # Convert to datetime using frappe utils
-            dt_value = get_datetime(dt_value)
-
-        # Convert to ISO8601 format (YYYY-MM-DDTHH:MM:SSZ)
-        return dt_value.strftime('%Y-%m-%dT%H:%M:%SZ')
 
     def _credentials_changed(self):
         """Check if any client credentials have changed"""

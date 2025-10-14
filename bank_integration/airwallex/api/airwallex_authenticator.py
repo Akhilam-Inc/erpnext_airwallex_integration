@@ -164,3 +164,12 @@ class AirwallexAuthenticator(AirwallexBase):
         if auth_response and auth_response.get('token'):
             return auth_response.get('token')
         return None
+
+    def handle_token_invalidation(self):
+        """Handle when a token is found to be invalid - clear cache and get fresh token"""
+        frappe.log_error(
+            f"Token invalidated for client {self.client_id}, clearing cache and getting fresh token",
+            f"Token-Invalid-{self.client_id[:6]}"
+        )
+        self.clear_cached_token()
+        return self.get_valid_token()

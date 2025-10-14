@@ -97,6 +97,23 @@ class AirwallexBase:
         # Use the authenticator's method to get a valid token
         return auth.get_valid_token()
 
+    def refresh_token_on_unauthorized(self):
+        """Refresh token when we get unauthorized error"""
+        from bank_integration.airwallex.api.airwallex_authenticator import AirwallexAuthenticator
+
+        auth = AirwallexAuthenticator(
+            client_id=self.client_id,
+            api_key=self.api_key,
+            api_url=self.api_url
+        )
+
+        # Handle token invalidation and get fresh token
+        token = auth.handle_token_invalidation()
+        if token:
+            self.headers["Authorization"] = f"Bearer {token}"
+            return True
+        return False
+
     def ensure_authenticated_headers(self, force_fresh=False):
         """Ensure headers have valid bearer token"""
         if force_fresh:
@@ -123,34 +140,54 @@ class AirwallexBase:
         # Ensure we have auth token for API calls (not auth endpoints)
         if not self.is_auth_instance:
             self.ensure_authenticated_headers()
-        
+
         try:
             return self._make_request(SupportedHTTPMethod.GET, endpoint=endpoint, params=params, headers=headers)
         except AirwallexAPIError as e:
             # If unauthorized and not an auth instance, try with fresh token
             if e.status_code == 401 and not self.is_auth_instance:
-                frappe.log_error(
-                    f"Token unauthorized for client {self.client_id[:8]}, retrying with fresh token",
-                    f"Token-Retry-{self.client_id[:6]}"
-                )
-                self.ensure_authenticated_headers(force_fresh=True)
-                return self._make_request(SupportedHTTPMethod.GET, endpoint=endpoint, params=params, headers=headers)
+                if self.refresh_token_on_unauthorized():
+                    return self._make_request(SupportedHTTPMethod.GET, endpoint=endpoint, params=params, headers=headers)
             raise
 
     def delete(self, endpoint=None, params=None, headers=None):
         if not self.is_auth_instance:
             self.ensure_authenticated_headers()
-        return self._make_request(SupportedHTTPMethod.DELETE, endpoint=endpoint, params=params, headers=headers)
+
+        try:
+            return self._make_request(SupportedHTTPMethod.DELETE, endpoint=endpoint, params=params, headers=headers)
+        except AirwallexAPIError as e:
+            # If unauthorized and not an auth instance, try with fresh token
+            if e.status_code == 401 and not self.is_auth_instance:
+                if self.refresh_token_on_unauthorized():
+                    return self._make_request(SupportedHTTPMethod.DELETE, endpoint=endpoint, params=params, headers=headers)
+            raise
 
     def post(self, endpoint, params=None, json=None, headers=None):
         if not self.is_auth_instance:
             self.ensure_authenticated_headers()
-        return self._make_request(SupportedHTTPMethod.POST, endpoint, params=params, json=json, headers=headers)
+
+        try:
+            return self._make_request(SupportedHTTPMethod.POST, endpoint, params=params, json=json, headers=headers)
+        except AirwallexAPIError as e:
+            # If unauthorized and not an auth instance, try with fresh token
+            if e.status_code == 401 and not self.is_auth_instance:
+                if self.refresh_token_on_unauthorized():
+                    return self._make_request(SupportedHTTPMethod.POST, endpoint, params=params, json=json, headers=headers)
+            raise
 
     def put(self, endpoint=None, json=None, headers=None):
         if not self.is_auth_instance:
             self.ensure_authenticated_headers()
-        return self._make_request(SupportedHTTPMethod.PUT, endpoint=endpoint, json=json, headers=headers)
+
+        try:
+            return self._make_request(SupportedHTTPMethod.PUT, endpoint=endpoint, json=json, headers=headers)
+        except AirwallexAPIError as e:
+            # If unauthorized and not an auth instance, try with fresh token
+            if e.status_code == 401 and not self.is_auth_instance:
+                if self.refresh_token_on_unauthorized():
+                    return self._make_request(SupportedHTTPMethod.PUT, endpoint=endpoint, json=json, headers=headers)
+            raise
 
     def _make_request(self, method: SupportedHTTPMethod, endpoint=None, params=None, json=None, headers=None):
         """Base method for making HTTP requests."""
@@ -184,6 +221,11 @@ class AirwallexBase:
                 error_msg = f"HTTP {response.status_code}: {response.text}"
                 # Instead of throwing, raise a custom exception that can be caught
                 raise AirwallexAPIError(error_msg, response.status_code)
+
+            # Also check for unauthorized response even if status code is not 401
+            if isinstance(response_data, dict) and response_data.get('code') == 'unauthorized':
+                error_msg = f"Unauthorized: {response_data.get('message', 'Access denied')}"
+                raise AirwallexAPIError(error_msg, 401)
 
             return response_data if isinstance(response_data, dict) else {"error": response_data}
 
