@@ -89,7 +89,7 @@ def sync_client_transactions(client, from_date_iso, to_date_iso, settings):
 
         for txn in transactions:
             try:
-                if not transaction_exists(txn.get('id')) and txn.get('currency') == "AUD": # Only sync AUD transactions temporarily
+                if not transaction_exists(txn.get('id')) and txn.get('currency'): # == "AUD": Only sync AUD transactions temporarily
                     # Map transaction to client's bank account
                     bank_txn = map_airwallex_to_erpnext(txn, client.bank_account)
                     bank_txn_doc = frappe.get_doc(bank_txn)
@@ -105,10 +105,9 @@ def sync_client_transactions(client, from_date_iso, to_date_iso, settings):
             except Exception as txn_error:
                 client_short = client.airwallex_client_id[:8]
                 frappe.log_error(
-                    f"Failed to process transaction {txn.get('id', 'unknown')}: {str(txn_error)[:300]}",
-                    f"Txn Error - {client_short}"
+                    message=f"Failed to process transaction {txn.get('id', 'unknown')}: {str(txn_error)[:300]}",
+                    title=f"Txn Error - {client_short}"
                 )
-                processed += 1  # Still count as processed even if failed
 
         # Final progress update
         if hasattr(settings, 'update_sync_progress'):
@@ -119,16 +118,16 @@ def sync_client_transactions(client, from_date_iso, to_date_iso, settings):
     except AirwallexAPIError as e:
         client_short = client.airwallex_client_id[:8] if client.airwallex_client_id else "unknown"
         frappe.log_error(
-            f"API Error for client {client.airwallex_client_id}: {str(e.message)[:300]}",
-            f"API Error - {client_short}"
+            message=f"API Error for client {client.airwallex_client_id}: {str(e.message)[:300]}",
+            title=f"API Error - {client_short}"
         )
         return 0, 0
 
     except Exception as e:
         client_short = client.airwallex_client_id[:8] if client.airwallex_client_id else "unknown"
         frappe.log_error(
-            f"Sync failed for client {client.airwallex_client_id}: {str(e)[:300]}",
-            f"Sync Error - {client_short}"
+            message=f"Sync failed for client {client.airwallex_client_id}: {str(e)[:300]}",
+            title=f"Sync Error - {client_short}"
         )
         return 0, 0
 

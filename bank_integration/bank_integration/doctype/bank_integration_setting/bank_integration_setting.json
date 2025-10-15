@@ -63,12 +63,14 @@
   {
    "fieldname": "api_url",
    "fieldtype": "Data",
-   "label": "API URL"
+   "label": "API URL",
+   "mandatory_depends_on": "eval:doc.enable_airwallex"
   },
   {
    "fieldname": "file_url",
    "fieldtype": "Data",
-   "label": "File URL"
+   "label": "File URL",
+   "mandatory_depends_on": "eval:doc.enable_airwallex"
   },
   {
    "fieldname": "column_break_nhxs",
@@ -76,11 +78,14 @@
   },
   {
    "default": "0",
+   "depends_on": "eval:doc.enable_airwallex",
+   "description": "Enable this to log API call details for development.",
    "fieldname": "enable_log",
    "fieldtype": "Check",
    "label": "Enable Log"
   },
   {
+   "depends_on": "eval:doc.enable_airwallex",
    "fieldname": "sync_status_section",
    "fieldtype": "Section Break",
    "label": "Sync Options"
@@ -106,19 +111,19 @@
   {
    "fieldname": "sync_progress",
    "fieldtype": "Percent",
-   "label": "Sync Progress",
+   "label": "Last Sync Progress",
    "read_only": 1
   },
   {
    "fieldname": "total_records",
    "fieldtype": "Int",
-   "label": "Total Records",
+   "label": "Last Total Records",
    "read_only": 1
   },
   {
    "fieldname": "processed_records",
    "fieldtype": "Int",
-   "label": "Processed Records",
+   "label": "Last Processed Records",
    "read_only": 1
   },
   {
@@ -155,9 +160,11 @@
    "fieldname": "airwallex_clients",
    "fieldtype": "Table",
    "label": "Clients",
+   "mandatory_depends_on": "eval:doc.enable_airwallex",
    "options": "Airwallex Client"
   },
   {
+   "depends_on": "eval:doc.enable_airwallex",
    "fieldname": "sync_old_transactions_section",
    "fieldtype": "Section Break",
    "label": "Sync Old Transactions"
@@ -167,7 +174,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-10-14 10:34:35.288266",
+ "modified": "2025-10-15 15:41:19.760726",
  "modified_by": "Administrator",
  "module": "Bank Integration",
  "name": "Bank Integration Setting",
