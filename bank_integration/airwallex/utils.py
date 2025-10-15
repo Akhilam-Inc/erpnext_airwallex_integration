@@ -39,7 +39,7 @@ def map_airwallex_to_erpnext(txn, bank_account):
         "doctype": "Bank Transaction",
         "date": txn.get("created_at", "")[:10],  # YYYY-MM-DD
         "status": map_airwallex_status_to_erpnext(txn.get("status", "PENDING")),
-        "bank_account": bank_account,
+        # "bank_account": bank_account,
         "currency": txn.get("currency", "USD"),
         "description": txn.get("description") or txn.get("source_type", ""),
         "reference_number": txn.get("batch_id", ""),
