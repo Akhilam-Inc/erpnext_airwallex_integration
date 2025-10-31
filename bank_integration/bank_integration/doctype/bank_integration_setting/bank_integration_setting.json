@@ -94,7 +94,7 @@
    "default": "Not Started",
    "fieldname": "sync_status",
    "fieldtype": "Select",
-   "label": "Sync Status",
+   "label": "Last Sync Status",
    "options": "Not Started\nIn Progress\nCompleted\nCompleted with Errors\nFailed",
    "read_only": 1
   },
@@ -174,7 +174,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-10-15 15:41:19.760726",
+ "modified": "2025-10-16 01:26:52.499067",
  "modified_by": "Administrator",
  "module": "Bank Integration",
  "name": "Bank Integration Setting",

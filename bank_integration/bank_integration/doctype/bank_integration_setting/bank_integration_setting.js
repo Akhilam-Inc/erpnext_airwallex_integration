@@ -8,7 +8,7 @@ frappe.ui.form.on('Bank Integration Setting', {
             frm.doc.sync_status !== 'In Progress' &&
 			frm.doc.sync_status !== 'Completed with Errors' &&
             frm.doc.from_date &&  // Changed from frm.doc.from
-            frm.doc.to_date) {    // Changed from frm.doc.to
+            frm.doc.to_date && frm.doc.enable_airwallex == 1) {    // Changed from frm.doc.to
 
             frm.add_custom_button(__('Sync Old Transactions'), function() {
                 frappe.confirm(
@@ -35,7 +35,7 @@ frappe.ui.form.on('Bank Integration Setting', {
             (frm.doc.sync_status === 'Failed' ||
              frm.doc.sync_status === 'Completed with Errors') &&
             frm.doc.from_date &&  // Changed
-            frm.doc.to_date) {    // Changed
+            frm.doc.to_date && frm.doc.enable_airwallex == 1) {    // Changed
 
             frm.add_custom_button(__('Restart Transaction Sync'), function() {
                 frappe.confirm(
@@ -59,7 +59,7 @@ frappe.ui.form.on('Bank Integration Setting', {
         }
 
         // Add stop sync button for in-progress syncs
-        if (frm.doc.sync_status === 'In Progress') {
+        if (frm.doc.sync_status === 'In Progress' && frm.doc.enable_airwallex == 1) {
             frm.add_custom_button(__('Stop Transaction Sync'), function() {
                 frappe.confirm(
                     'Are you sure you want to stop the current transaction sync?',
@@ -98,7 +98,10 @@ frappe.ui.form.on('Bank Integration Setting', {
             frm.reload_doc();
         });
     },
-
+    enable_airwallex: function(frm) {
+        // Refresh to show/hide button when checkbox changes
+        frm.refresh();
+    },
     sync_old_transactions: function(frm) {
         // Refresh to show/hide button when checkbox changes
         frm.refresh();

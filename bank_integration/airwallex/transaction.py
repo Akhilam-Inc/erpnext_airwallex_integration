@@ -94,6 +94,7 @@ def sync_client_transactions(client, from_date_iso, to_date_iso, settings):
                     bank_txn = map_airwallex_to_erpnext(txn, client.bank_account)
                     bank_txn_doc = frappe.get_doc(bank_txn)
                     bank_txn_doc.insert()
+                    bank_txn_doc.submit()
                     created += 1
 
                 processed += 1

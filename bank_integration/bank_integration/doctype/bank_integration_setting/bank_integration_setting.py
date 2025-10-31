@@ -117,10 +117,17 @@ class BankIntegrationSetting(Document):
                         indicator="red",
                         alert=True
                     )
+        else:
+            # If disabled, reset sync status
+            self.sync_status = "Not Started"
+            self.processed_records = 0
+            self.total_records = 0
+            self.sync_progress = 0
+            self.last_sync_date = None
 
     def on_update(self):
         """Trigger sync job when sync_old_transactions is enabled"""
-        if self.sync_old_transactions and self.sync_status == "Not Started":
+        if self.enable_airwallex and self.sync_old_transactions and self.sync_status == "Not Started":
             self.start_transaction_sync()
 
     # Add method to get client configurations
