@@ -17,22 +17,43 @@ class BankIntegrationSetting(Document):
 
     if TYPE_CHECKING:
         from bank_integration.bank_integration.doctype.airwallex_client.airwallex_client import AirwallexClient
+        from bank_integration.bank_integration.doctype.skript_account.skript_account import SkriptAccount
+        from bank_integration.bank_integration.doctype.transaction_type_filter.transaction_type_filter import TransactionTypeFilter
         from frappe.types import DF
 
         airwallex_clients: DF.Table[AirwallexClient]
         api_url: DF.Data | None
         enable_airwallex: DF.Check
         enable_log: DF.Check
+        enable_skript: DF.Check
         file_url: DF.Data | None
         from_date: DF.Datetime | None
         last_sync_date: DF.Datetime | None
         processed_records: DF.Int
+        skript_access_token: DF.SmallText | None
+        skript_access_token_url: DF.Data | None
+        skript_accounts: DF.Table[SkriptAccount]
+        skript_api_url: DF.Data | None
+        skript_client_id: DF.Password | None
+        skript_client_secret: DF.Password | None
+        skript_consumer_id: DF.Data | None
+        skript_token_expiry: DF.Datetime | None
         sync_old_transactions: DF.Check
         sync_progress: DF.Percent
         sync_schedule: DF.Literal["Hourly", "Daily", "Weekly", "Monthly"]
         sync_status: DF.Literal["Not Started", "In Progress", "Completed", "Completed with Errors", "Failed"]
         to_date: DF.Datetime | None
         total_records: DF.Int
+        transaction_type_filters: DF.Table[TransactionTypeFilter]
+        skript_from_date: DF.Datetime | None
+        skript_last_sync_date: DF.Datetime | None
+        skript_processed_records: DF.Int
+        skript_sync_old_transactions: DF.Check
+        skript_sync_progress: DF.Percent
+        skript_sync_schedule: DF.Literal["Hourly", "Daily", "Weekly", "Monthly"]
+        skript_sync_status: DF.Literal["Not Started", "In Progress", "Completed", "Completed with Errors", "Failed"]
+        skript_to_date: DF.Datetime | None
+        skript_total_records: DF.Int
     # end: auto-generated types
 
     def is_enabled(self):
@@ -124,6 +145,24 @@ class BankIntegrationSetting(Document):
             self.total_records = 0
             self.sync_progress = 0
             self.last_sync_date = None
+
+        # Skript validation
+        if self.enable_skript:
+
+            if self._skript_credentials_changed():
+                # Test authentication and disable if it fails
+                authentication_successful = self.test_skript_authentication_silent()
+                if not authentication_successful:
+                    self.enable_skript = 0
+                    frappe.msgprint(
+                        "❌ Skript authentication failed. Skript integration has been disabled. Please check your credentials.",
+                        indicator="red",
+                        alert=True
+                    )
+
+            # Update is_mapped flag for all rows
+            for row in self.skript_accounts:
+                row.is_mapped = 1 if row.bank_account else 0
 
     def on_update(self):
         """Trigger sync job when sync_old_transactions is enabled"""
@@ -308,3 +347,388 @@ class BankIntegrationSetting(Document):
             },
             user=frappe.session.user
         )
+
+    def is_skript_enabled(self):
+        """Check if Skript integration is enabled"""
+        return bool(self.enable_skript)
+
+    @frappe.whitelist()
+    def test_skript_authentication(self):
+        """Test Skript authentication"""
+        if not self.skript_consumer_id:
+            frappe.throw("Please configure Skript Consumer ID")
+        
+        try:
+            from bank_integration.skript.api.skript_authenticator import SkriptAuthenticator
+            
+            auth = SkriptAuthenticator(
+                consumer_id=self.skript_consumer_id,
+                client_id=self.get_password("skript_client_id"),
+                client_secret=self.get_password("skript_client_secret"),
+                api_url=self.skript_api_url
+            )
+            
+            response = auth.authenticate()
+            
+            if response and response.get('access_token'):
+                frappe.msgprint(
+                    "✅ Skript authentication successful! Token cached.",
+                    indicator="green",
+                    title="Authentication Success"
+                )
+                return True
+            else:
+                frappe.msgprint(
+                    "❌ Skript authentication failed. Please check your credentials.",
+                    indicator="red",
+                    title="Authentication Failed"
+                )
+                return False
+        
+        except Exception as e:
+            frappe.msgprint(
+                f"❌ Skript authentication error: {str(e)}",
+                indicator="red",
+                title="Authentication Error"
+            )
+            frappe.log_error(frappe.get_traceback(), "Skript Auth Test Error")
+            return False
+
+    @frappe.whitelist()
+    def fetch_and_create_skript_accounts(self):
+        """
+        Fetch accounts from Skript API and save directly to database
+        This avoids conflicts with background sync jobs
+        """
+        if not self.enable_skript:
+            frappe.throw("Skript integration is not enabled")
+        
+        from bank_integration.skript.api.skript_accounts import SkriptAccounts
+        
+        try:
+            # Initialize API
+            api = SkriptAccounts(
+                consumer_id=self.skript_consumer_id,
+                client_id=self.get_password("skript_client_id"),
+                client_secret=self.get_password("skript_client_secret"),
+                api_url=self.skript_api_url
+            )
+            
+            # Fetch accounts
+            response = api.get_list(size=100)
+            
+            # Handle response format
+            accounts = response if isinstance(response, list) else response.get('items', [])
+            
+            if not accounts:
+                frappe.msgprint("No accounts found in Skript", indicator="blue")
+                return {"created": 0, "updated": 0}
+            
+            created = 0
+            updated = 0
+            
+            # Get existing Skript Account child records from database
+            existing_accounts = frappe.get_all(
+                "Skript Account",
+                filters={"parent": self.name, "parenttype": "Bank Integration Setting"},
+                fields=["name", "account_id", "bank_account"]
+            )
+            existing_map = {acc.account_id: acc for acc in existing_accounts}
+            
+            for acc in accounts:
+                account_id = acc.get('id')
+                display_name = acc.get('displayName', 'Unknown Account')
+                masked_number = acc.get('maskedNumber', '')
+                product_name = acc.get('productName', '')
+                data_holder_name = acc.get('dataHolderName', '')
+                
+                if account_id in existing_map:
+                    # Update existing child record directly in database
+                    existing = existing_map[account_id]
+                    frappe.db.set_value(
+                        "Skript Account",
+                        existing.name,
+                        {
+                            "display_name": display_name,
+                            "masked_number": masked_number,
+                            "product_name": product_name,
+                            "data_holder_name": data_holder_name,
+                            # Keep existing bank_account mapping
+                            "is_mapped": 1 if existing.bank_account else 0
+                        },
+                        update_modified=False  # Don't update parent's modified timestamp
+                    )
+                    updated += 1
+                else:
+                    # Create new child record directly in database
+                    child = frappe.get_doc({
+                        "doctype": "Skript Account",
+                        "parent": self.name,
+                        "parenttype": "Bank Integration Setting",
+                        "parentfield": "skript_accounts",
+                        "account_id": account_id,
+                        "display_name": display_name,
+                        "masked_number": masked_number,
+                        "product_name": product_name,
+                        "data_holder_name": data_holder_name,
+                        "bank_account": None,
+                        "is_mapped": 0
+                    })
+                    child.insert(ignore_permissions=True)
+                    created += 1
+            
+            # Show summary
+            message_parts = []
+            if created > 0:
+                message_parts.append(f"✅ Added {created} new accounts")
+            if updated > 0:
+                message_parts.append(f"🔄 Updated {updated} existing accounts")
+            
+            message_parts.append(f"<br><br>📝 The page will reload. Please map Skript Accounts to ERPNext Bank Accounts in the table.")
+            
+            frappe.msgprint(
+                "<br>".join(message_parts),
+                title="Skript Accounts Fetched",
+                indicator="green" if created > 0 or updated > 0 else "blue"
+            )
+            
+            return {
+                "created": created,
+                "updated": updated
+            }
+        
+        except Exception as e:
+            frappe.log_error(frappe.get_traceback(), "Skript Accounts Fetch Error")
+            frappe.throw(f"Failed to fetch accounts: {str(e)}")
+
+    @frappe.whitelist()
+    def validate_skript_account_mapping(self):
+        """
+        Validate that all Skript accounts are mapped before sync
+        Returns list of unmapped accounts or None if all mapped
+        """
+        if not self.enable_skript:
+            return None
+        
+        if not self.skript_accounts:
+            frappe.throw("No Skript accounts found. Please click 'Fetch Accounts' first.")
+        
+        unmapped = []
+        for row in self.skript_accounts:
+            if not row.bank_account:
+                unmapped.append({
+                    'account_id': row.account_id,
+                    'display_name': row.display_name,
+                    'masked_number': row.masked_number
+                })
+        
+        return unmapped if unmapped else None
+
+    @frappe.whitelist()
+    def start_skript_transaction_sync(self):
+        """Start background job for syncing Skript transactions"""
+        
+        # Validate account mapping first
+        unmapped = self.validate_skript_account_mapping()
+        
+        if unmapped:
+            # Build error message
+            account_list = "<br>".join([
+                f"• {acc['display_name']} ({acc['masked_number'] or acc['account_id']})"
+                for acc in unmapped
+            ])
+            
+            frappe.throw(
+                f"<b>Cannot start sync - Unmapped accounts found:</b><br><br>{account_list}<br><br>"
+                f"Please map all Skript accounts to ERPNext Bank Accounts before syncing.",
+                title="Unmapped Accounts"
+            )
+        
+        if not self.from_date or not self.to_date:
+            frappe.throw("From and To dates are required for syncing transactions")
+        
+        # Validate date range
+        if self.from_date > self.to_date:
+            frappe.throw("From date cannot be greater than To date")
+        
+        # Update Skript sync status
+        self.db_set('skript_sync_status', 'In Progress')
+        self.db_set('skript_last_sync_date', frappe.utils.now())
+        self.db_set('skript_processed_records', 0)
+        self.db_set('skript_total_records', 0)
+        self.db_set('skript_sync_progress', 0)
+        
+        
+        # Enqueue the sync job
+        from frappe.utils.background_jobs import enqueue
+        
+        enqueue(
+            'bank_integration.skript.transaction.sync_skript_transactions',
+            queue='long',
+            timeout=3600,
+            from_date=str(self.from_date),
+            to_date=str(self.to_date),
+            setting_name=self.name
+        )
+        
+        frappe.msgprint(
+            "Skript transaction sync job has been started. You can monitor the progress from this page.",
+            indicator="blue",
+            alert=False
+        )
+
+    @frappe.whitelist()
+    def start_skript_transaction_sync(self):
+        """Start background job for syncing Skript transactions"""
+        if not self.from_date or not self.to_date:
+            frappe.throw("From and To dates are required for syncing transactions")
+        
+        # Validate date range
+        if self.from_date > self.to_date:
+            frappe.throw("From date cannot be greater than To date")
+        
+        # Update status to indicate sync has started
+        self.db_set('sync_status', 'In Progress')
+        self.db_set('last_sync_date', frappe.utils.now())
+        self.db_set('processed_records', 0)
+        self.db_set('total_records', 0)
+        self.db_set('sync_progress', 0)
+        
+        # Enqueue the sync job
+        from frappe.utils.background_jobs import enqueue
+        
+        enqueue(
+            'bank_integration.skript.skript_transaction.sync_skript_transactions',
+            queue='long',
+            timeout=3600,  # 1 hour timeout
+            from_date=str(self.from_date),
+            to_date=str(self.to_date),
+            setting_name=self.name
+        )
+        
+        frappe.msgprint(
+            "Skript transaction sync job has been started. You can monitor the progress from this page.",
+            indicator="blue",
+            alert=False
+        )
+
+    def _skript_credentials_changed(self):
+        """Check if Skript credentials have changed"""
+        if self.is_new():
+            return True
+        
+        # Get the old document
+        old_doc = self.get_doc_before_save()
+        if not old_doc:
+            return True
+        
+        # Check if any Skript credential fields changed
+        if self.skript_api_url != old_doc.skript_api_url:
+            return True
+        
+        if self.skript_access_token_url != old_doc.skript_access_token_url:
+            return True
+        
+        if self.skript_consumer_id != old_doc.skript_consumer_id:
+            return True
+        
+        # Check password fields (they return encrypted values)
+        if (self.get_password("skript_client_id") != 
+            old_doc.get_password("skript_client_id")):
+            return True
+        
+        if (self.get_password("skript_client_secret") != 
+            old_doc.get_password("skript_client_secret")):
+            return True
+        
+        return False
+
+    def test_skript_authentication_silent(self):
+        """Test Skript authentication without showing messages - returns True/False"""
+        if not self.skript_consumer_id:
+            return False
+        
+        try:
+            from bank_integration.skript.api.skript_authenticator import SkriptAuthenticator
+            
+            auth = SkriptAuthenticator(
+                consumer_id=self.skript_consumer_id,
+                client_id=self.get_password("skript_client_id"),
+                client_secret=self.get_password("skript_client_secret"),
+                api_url=self.skript_api_url
+            )
+            
+            response = auth.authenticate()
+            
+            if response and response.get('access_token'):
+                return True
+            else:
+                return False
+        
+        except Exception as e:
+            # Log the error but don't show message
+            frappe.log_error(
+                f"Skript authentication test failed: {str(e)}",
+                "Skript Auth Test"
+            )
+            return False
+    def update_skript_sync_progress(self, processed, total, status="In Progress"):
+        """Update Skript sync progress without triggering modified timestamp"""
+        progress = (processed / total * 100) if total > 0 else 0
+        
+        # Use db_set to avoid document modified conflicts
+        frappe.db.set_value(
+            "Bank Integration Setting",
+            self.name,
+            {
+                "skript_processed_records": processed,
+                "skript_total_records": total,
+                "skript_sync_progress": progress,
+                "skript_sync_status": status,
+                "skript_last_sync_date": frappe.utils.now()
+            },
+            update_modified=False
+        )
+        
+        # Publish realtime updates for UI
+        frappe.publish_realtime(
+            'skript_sync_progress',
+            {
+                'processed': processed,
+                'total': total,
+                'progress': progress,
+                'status': status
+            },
+            user=frappe.session.user
+        )
+    @frappe.whitelist()
+    def restart_skript_transaction_sync(self):
+        """Restart Skript transaction sync"""
+        if not self.skript_from_date or not self.skript_to_date:
+            frappe.throw("Skript From and To dates are required for syncing transactions")
+        
+        # Reset Skript sync status
+        self.db_set('skript_sync_status', 'Not Started')
+        self.db_set('skript_processed_records', 0)
+        self.db_set('skript_total_records', 0)
+        self.db_set('skript_sync_progress', 0)
+        
+        # Start the sync
+        return self.start_skript_transaction_sync()
+
+    @frappe.whitelist()
+    def stop_skript_transaction_sync(self):
+        """Stop the current Skript transaction sync"""
+        try:
+            # Update status to stopped
+            self.db_set('skript_sync_status', 'Stopped')
+            
+            frappe.msgprint(
+                "Skript transaction sync has been marked as stopped. The background job may take a moment to complete.",
+                indicator="orange",
+                alert=False
+            )
+        
+        except Exception as e:
+            frappe.log_error(frappe.get_traceback(), "Failed to stop Skript sync job")
+            frappe.throw(f"Failed to stop sync job: {str(e)}")

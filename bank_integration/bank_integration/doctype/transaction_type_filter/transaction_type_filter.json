@@ -1,0 +1,43 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-11-03 10:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "transaction_type",
+  "filter_action"
+ ],
+ "fields": [
+  {
+   "fieldname": "transaction_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Transaction Type",
+   "options": "DISPUTE_REVERSAL\nDISPUTE_LOST\nREFUND\nREFUND_REVERSAL\nREFUND_FAILURE\nPAYMENT_RESERVE_HOLD\nPAYMENT_RESERVE_RELEASE\nPAYOUT\nPAYOUT_FAILURE\nPAYOUT_REVERSAL\nCONVERSION_SELL\nCONVERSION_BUY\nCONVERSION_REVERSAL\nDEPOSIT\nADJUSTMENT\nFEE\nDD_CREDIT\nDD_DEBIT\nDC_CREDIT\nDC_DEBIT\nTRANSFER\nPAYMENT\nISSUING_AUTHORISATION_HOLD\nISSUING_AUTHORISATION_RELEASE\nISSUING_CAPTURE\nISSUING_REFUND\nPURCHASE\nPREPAYMENT\nPREPAYMENT_RELEASE",
+   "reqd": 1
+  },
+  {
+   "default": "Include",
+   "fieldname": "filter_action",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Action",
+   "options": "Include\nExclude",
+   "reqd": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2025-11-03 10:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Bank Integration",
+ "name": "Transaction Type Filter",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

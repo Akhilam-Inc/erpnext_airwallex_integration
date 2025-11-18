@@ -7,6 +7,7 @@
  "field_order": [
   "3_section",
   "enable_airwallex",
+  "enable_skript",
   "column_break_nhxs",
   "enable_log",
   "sync_status_section",
@@ -28,7 +29,20 @@
   "column_break_jikw",
   "file_url",
   "section_break_okwh",
-  "airwallex_clients"
+  "airwallex_clients",
+  "transaction_filtering_section",
+  "transaction_type_filters",
+  "skript_tab",
+  "skript_api_url",
+  "skript_client_id",
+  "skript_access_token",
+  "column_break_knnr",
+  "skript_access_token_url",
+  "skript_client_secret",
+  "skript_consumer_id",
+  "skript_token_expiry",
+  "section_break_yxul",
+  "skript_accounts"
  ],
  "fields": [
   {
@@ -168,13 +182,178 @@
    "fieldname": "sync_old_transactions_section",
    "fieldtype": "Section Break",
    "label": "Sync Old Transactions"
-  }
+  },
+  {
+   "depends_on": "eval:doc.enable_airwallex",
+   "fieldname": "transaction_filtering_section",
+   "fieldtype": "Section Break",
+   "label": "Transaction Type Filtering"
+  },
+  {
+   "description": "Configure which transaction types to include or exclude during sync. If no filters are configured, all transaction types will be synced.",
+   "fieldname": "transaction_type_filters",
+   "fieldtype": "Table",
+   "label": "Transaction Type Filters",
+   "options": "Transaction Type Filter"
+  },
+  {
+   "fieldname": "skript_tab",
+   "fieldtype": "Tab Break",
+   "label": "Skript"
+  },
+  {
+   "fieldname": "skript_api_url",
+   "fieldtype": "Data",
+   "label": "Skript API URL",
+   "mandatory_depends_on": "eval:doc.enable_skript == 1"
+  },
+  {
+   "fieldname": "column_break_knnr",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "skript_access_token_url",
+   "fieldtype": "Data",
+   "label": "Skript Access Token URL",
+   "mandatory_depends_on": "eval:doc.enable_skript == 1"
+  },
+  {
+   "default": "0",
+   "fieldname": "enable_skript",
+   "fieldtype": "Check",
+   "label": "Enable Skript"
+  },
+  {
+   "fieldname": "skript_client_id",
+   "fieldtype": "Password",
+   "label": "Skript Client ID",
+   "mandatory_depends_on": "eval:doc.enable_skript == 1"
+  },
+  {
+   "fieldname": "skript_client_secret",
+   "fieldtype": "Password",
+   "label": "Skript Client Secret",
+   "mandatory_depends_on": "eval:doc.enable_skript == 1"
+  },
+  {
+   "fieldname": "skript_access_token",
+   "fieldtype": "Small Text",
+   "label": "Skript Access Token"
+  },
+  {
+   "fieldname": "skript_consumer_id",
+   "fieldtype": "Data",
+   "label": "Skript Consumer ID",
+   "mandatory_depends_on": "eval:doc.enable_skript == 1"
+  },
+  {
+   "fieldname": "skript_token_expiry",
+   "fieldtype": "Datetime",
+   "label": "Skript Token Expiry"
+  },
+  {
+   "fieldname": "section_break_yxul",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "skript_accounts",
+   "fieldtype": "Table",
+   "label": "Skript Accounts",
+   "options": "Skript Account"
+  },
+  {
+  "fieldname": "skript_sync_section",
+  "fieldtype": "Section Break",
+  "label": "Skript Sync Options",
+  "depends_on": "eval:doc.enable_skript"
+},
+{
+  "fieldname": "skript_sync_schedule",
+  "fieldtype": "Select",
+  "label": "Skript Sync Schedule",
+  "options": "Hourly\nDaily\nWeekly\nMonthly",
+  "default": "Daily"
+},
+{
+  "fieldname": "skript_sync_status",
+  "fieldtype": "Select",
+  "label": "Skript Last Sync Status",
+  "options": "Not Started\nIn Progress\nCompleted\nCompleted with Errors\nFailed",
+  "default": "Not Started",
+  "read_only": 1
+},
+{
+  "fieldname": "column_break_skript_sync",
+  "fieldtype": "Column Break"
+},
+{
+  "fieldname": "skript_last_sync_date",
+  "fieldtype": "Datetime",
+  "label": "Skript Last Sync Date",
+  "read_only": 1
+},
+{
+  "fieldname": "skript_sync_progress",
+  "fieldtype": "Percent",
+  "label": "Skript Last Sync Progress",
+  "read_only": 1
+},
+{
+  "fieldname": "section_break_skript_records",
+  "fieldtype": "Section Break"
+},
+{
+  "fieldname": "skript_total_records",
+  "fieldtype": "Int",
+  "label": "Skript Last Total Records",
+  "read_only": 1
+},
+{
+  "fieldname": "column_break_skript_processed",
+  "fieldtype": "Column Break"
+},
+{
+  "fieldname": "skript_processed_records",
+  "fieldtype": "Int",
+  "label": "Skript Last Processed Records",
+  "read_only": 1
+},
+{
+  "fieldname": "skript_sync_old_section",
+  "fieldtype": "Section Break",
+  "label": "Skript Sync Old Transactions",
+  "depends_on": "eval:doc.enable_skript"
+},
+{
+  "fieldname": "skript_sync_old_transactions",
+  "fieldtype": "Check",
+  "label": "Sync Skript Old Transactions",
+  "default": "0"
+},
+{
+  "fieldname": "column_break_skript_dates",
+  "fieldtype": "Column Break"
+},
+{
+  "fieldname": "skript_from_date",
+  "fieldtype": "Datetime",
+  "label": "Skript From Date",
+  "depends_on": "eval:doc.skript_sync_old_transactions",
+  "mandatory_depends_on": "eval:doc.skript_sync_old_transactions == 1"
+},
+{
+  "fieldname": "skript_to_date",
+  "fieldtype": "Datetime",
+  "label": "Skript To Date",
+  "depends_on": "eval:doc.skript_sync_old_transactions",
+  "mandatory_depends_on": "eval:doc.skript_sync_old_transactions == 1"
+}
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-10-16 01:26:52.499067",
+ "modified": "2025-11-14 18:34:25.731438",
  "modified_by": "Administrator",
  "module": "Bank Integration",
  "name": "Bank Integration Setting",

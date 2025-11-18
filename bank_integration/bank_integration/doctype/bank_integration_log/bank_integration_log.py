@@ -14,11 +14,11 @@ class BankIntegrationLog(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
-		message: DF.SmallText | None
+		message: DF.LongText | None
 		method: DF.SmallText | None
 		request_data: DF.Code | None
 		request_headers: DF.Code | None
-		response_data: DF.Code | None
+		response_data: DF.LongText | None
 		status: DF.Data | None
 		status_code: DF.Data | None
 		title: DF.Data | None

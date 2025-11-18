@@ -45,7 +45,7 @@
   },
   {
    "fieldname": "response_data",
-   "fieldtype": "Code",
+   "fieldtype": "Long Text",
    "label": "Response Data",
    "read_only": 1
   },
@@ -73,7 +73,7 @@
   },
   {
    "fieldname": "message",
-   "fieldtype": "Small Text",
+   "fieldtype": "Long Text",
    "in_list_view": 1,
    "label": "Message",
    "read_only": 1
@@ -88,7 +88,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-10-14 10:10:07.753987",
+ "modified": "2025-11-14 17:37:52.221972",
  "modified_by": "Administrator",
  "module": "Bank Integration",
  "name": "Bank Integration Log",
