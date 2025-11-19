@@ -7,8 +7,8 @@ from .skript_base_api import SkriptBase, SkriptAPIError
 class SkriptAuthenticator(SkriptBase):
     """OAuth 2.0 authenticator for Skript"""
     
-    def __init__(self, consumer_id, client_id, client_secret, api_url):
-        super().__init__(consumer_id, client_id, client_secret, api_url)
+    def __init__(self, consumer_id, client_id, client_secret, api_url , api_scope="skript/ob-direct-data"):
+        super().__init__(consumer_id, client_id, client_secret, api_url , api_scope)
         self.is_auth_instance = True
     
     def authenticate(self):
@@ -32,7 +32,7 @@ class SkriptAuthenticator(SkriptBase):
                 "grant_type": "client_credentials",
                 "client_id": self.client_id,
                 "client_secret": self.client_secret,
-                "scope": "skript/ob-products skript/ob-direct-data"
+                "scope": self.skript_api_scope
             }
             
             headers = {

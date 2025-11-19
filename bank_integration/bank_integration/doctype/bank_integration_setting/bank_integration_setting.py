@@ -33,18 +33,11 @@ class BankIntegrationSetting(Document):
         skript_access_token: DF.SmallText | None
         skript_access_token_url: DF.Data | None
         skript_accounts: DF.Table[SkriptAccount]
+        skript_api_scope: DF.Data | None
         skript_api_url: DF.Data | None
         skript_client_id: DF.Password | None
         skript_client_secret: DF.Password | None
         skript_consumer_id: DF.Data | None
-        skript_token_expiry: DF.Datetime | None
-        sync_old_transactions: DF.Check
-        sync_progress: DF.Percent
-        sync_schedule: DF.Literal["Hourly", "Daily", "Weekly", "Monthly"]
-        sync_status: DF.Literal["Not Started", "In Progress", "Completed", "Completed with Errors", "Failed"]
-        to_date: DF.Datetime | None
-        total_records: DF.Int
-        transaction_type_filters: DF.Table[TransactionTypeFilter]
         skript_from_date: DF.Datetime | None
         skript_last_sync_date: DF.Datetime | None
         skript_processed_records: DF.Int
@@ -53,7 +46,16 @@ class BankIntegrationSetting(Document):
         skript_sync_schedule: DF.Literal["Hourly", "Daily", "Weekly", "Monthly"]
         skript_sync_status: DF.Literal["Not Started", "In Progress", "Completed", "Completed with Errors", "Failed"]
         skript_to_date: DF.Datetime | None
+        skript_token_expiry: DF.Datetime | None
+        skript_api_scope: DF.Data | None
         skript_total_records: DF.Int
+        sync_old_transactions: DF.Check
+        sync_progress: DF.Percent
+        sync_schedule: DF.Literal["Hourly", "Daily", "Weekly", "Monthly"]
+        sync_status: DF.Literal["Not Started", "In Progress", "Completed", "Completed with Errors", "Failed"]
+        to_date: DF.Datetime | None
+        total_records: DF.Int
+        transaction_type_filters: DF.Table[TransactionTypeFilter]
     # end: auto-generated types
 
     def should_sync_transaction(self, transaction_type):
@@ -401,7 +403,8 @@ class BankIntegrationSetting(Document):
                 consumer_id=self.skript_consumer_id,
                 client_id=self.get_password("skript_client_id"),
                 client_secret=self.get_password("skript_client_secret"),
-                api_url=self.skript_api_url
+                api_url=self.skript_api_url,
+                api_scope=self.skript_api_scope
             )
             
             response = auth.authenticate()
@@ -447,7 +450,8 @@ class BankIntegrationSetting(Document):
                 consumer_id=self.skript_consumer_id,
                 client_id=self.get_password("skript_client_id"),
                 client_secret=self.get_password("skript_client_secret"),
-                api_url=self.skript_api_url
+                api_url=self.skript_api_url,
+                api_scope=self.skript_api_scope
             )
             
             # Fetch accounts
@@ -691,7 +695,8 @@ class BankIntegrationSetting(Document):
                 consumer_id=self.skript_consumer_id,
                 client_id=self.get_password("skript_client_id"),
                 client_secret=self.get_password("skript_client_secret"),
-                api_url=self.skript_api_url
+                api_url=self.skript_api_url,
+                api_scope=self.skript_api_scope
             )
             
             response = auth.authenticate()
