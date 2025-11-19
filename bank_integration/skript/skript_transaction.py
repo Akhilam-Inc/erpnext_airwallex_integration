@@ -40,7 +40,8 @@ def sync_skript_transactions(from_date, to_date, setting_name):
             consumer_id=settings.skript_consumer_id,
             client_id=settings.get_password("skript_client_id"),
             client_secret=settings.get_password("skript_client_secret"),
-            api_url=settings.skript_api_url
+            api_url=settings.skript_api_url,
+            api_scope=settings.skript_api_scope
         )
         
         # Format dates

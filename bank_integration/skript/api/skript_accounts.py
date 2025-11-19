@@ -5,8 +5,8 @@ from .skript_base_api import SkriptBase
 class SkriptAccounts(SkriptBase):
     """API wrapper for Skript accounts endpoint"""
     
-    def __init__(self, consumer_id, client_id, client_secret, api_url):
-        super().__init__(consumer_id, client_id, client_secret, api_url)
+    def __init__(self, consumer_id, client_id, client_secret, api_url , api_scope="skript/ob-direct-data"):
+        super().__init__(consumer_id, client_id, client_secret, api_url, api_scope)
     
     def get_list(self, size=100, ref=None, fields=None, filter=None):
         """
@@ -64,7 +64,8 @@ def test_get_accounts():
         consumer_id=settings.skript_consumer_id,
         client_id=settings.get_password("skript_client_id"),
         client_secret=settings.get_password("skript_client_secret"),
-        api_url=settings.skript_api_url
+        api_url=settings.skript_api_url,
+        api_scope=settings.skript_api_scope
     )
     
     try:

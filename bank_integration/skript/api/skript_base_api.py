@@ -6,12 +6,13 @@ from datetime import datetime, timedelta
 class SkriptBase:
     """Base API client for Skript"""
     
-    def __init__(self, consumer_id, client_id, client_secret, api_url):
+    def __init__(self, consumer_id, client_id, client_secret, api_url , api_scope="skript/ob-direct-data"):
         self.consumer_id = consumer_id
         self.client_id = client_id
         self.client_secret = client_secret
         self.api_url = api_url
         self.enable_api_log = True
+        self.skript_api_scope = api_scope
         
         # Standard headers
         self.headers = {
@@ -27,7 +28,8 @@ class SkriptBase:
             consumer_id=self.consumer_id,
             client_id=self.client_id,
             client_secret=self.client_secret,
-            api_url=self.api_url
+            api_url=self.api_url,
+            api_scope=self.skript_api_scope
         )
         
         if force_fresh:
