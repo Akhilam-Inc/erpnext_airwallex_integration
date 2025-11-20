@@ -36,57 +36,27 @@ def map_skript_to_erpnext(skript_txn, bank_account):
 def parse_skript_date(date_string):
     """
     Parse Skript date to ERPNext datetime (timezone-naive)
-    
-    Args:
-        date_string: ISO8601 datetime string from Skript
-                    Examples: '2025-10-23T11:00:09+11:00' or '2025-10-23T00:00:09Z'
-    
-    Returns:
-        datetime: Timezone-naive datetime object for ERPNext
+    Preserves the local date/time from the original timezone
     """
     if not date_string:
         return frappe.utils.now()
     
     try:
-        # Method 1: Use Frappe's built-in parser (handles timezones automatically)
-        dt = frappe.utils.get_datetime(date_string)
+        # Parse the ISO8601 datetime with timezone
+        dt_with_tz = datetime.fromisoformat(date_string.replace('Z', '+00:00'))
         
-        # Ensure it's timezone-naive (ERPNext requirement)
-        if hasattr(dt, 'tzinfo') and dt.tzinfo is not None:
-            # Convert to UTC first, then remove timezone
-            import pytz
-            utc_dt = dt.astimezone(pytz.UTC)
-            dt = utc_dt.replace(tzinfo=None)
+        # Simply remove timezone to preserve local date/time
+        # DO NOT convert to UTC - this causes date shifts
+        naive_dt = dt_with_tz.replace(tzinfo=None)
         
-        return dt
+        return naive_dt
         
     except Exception as e:
-        # Fallback: Manual parsing
-        try:
-            # Remove 'Z' and replace with '+00:00' for UTC
-            clean_date = date_string.replace('Z', '+00:00')
-            
-            # Parse with timezone
-            from datetime import datetime
-            dt_with_tz = datetime.fromisoformat(clean_date)
-            
-            # Remove timezone info (make naive)
-            if dt_with_tz.tzinfo is not None:
-                import pytz
-                utc_dt = dt_with_tz.astimezone(pytz.UTC)
-                dt = utc_dt.replace(tzinfo=None)
-            else:
-                dt = dt_with_tz
-            
-            return dt
-            
-        except Exception as parse_error:
-            frappe.log_error(
-                f"Date parse error for '{date_string}': {str(e)}\nFallback error: {str(parse_error)}", 
-                "Skript Date Parse"
-            )
-            return frappe.utils.now()
-
+        frappe.log_error(
+            f"Date parse error for '{date_string}': {str(e)}", 
+            "Skript Date Parse"
+        )
+        return frappe.utils.now()
 
 def format_datetime_for_skript_filter(dt):
     """
