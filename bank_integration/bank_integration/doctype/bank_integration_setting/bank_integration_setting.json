@@ -265,7 +265,8 @@
   {
    "fieldname": "skript_token_expiry",
    "fieldtype": "Datetime",
-   "label": "Skript Token Expiry"
+   "label": "Skript Token Expiry",
+   "read_only": 1
   },
   {
    "fieldname": "section_break_yxul",
@@ -305,8 +306,7 @@
   {
    "fieldname": "skript_last_sync_date",
    "fieldtype": "Datetime",
-   "label": "Skript Last Sync Date",
-   "read_only": 1
+   "label": "Skript Last Sync Date"
   },
   {
    "fieldname": "skript_sync_progress",
@@ -374,7 +374,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-11-19 21:24:57.010352",
+ "modified": "2025-11-20 23:55:16.943886",
  "modified_by": "Administrator",
  "module": "Bank Integration",
  "name": "Bank Integration Setting",

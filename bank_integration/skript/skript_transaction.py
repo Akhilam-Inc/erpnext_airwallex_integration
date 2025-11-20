@@ -6,7 +6,7 @@ from datetime import datetime
 import traceback
 
 
-def sync_skript_transactions(from_date, to_date, setting_name):
+def sync_skript_transactions(setting_name , from_date = None, to_date = None):
     """
     Sync Skript transactions for the configured consumer
     """
@@ -175,7 +175,7 @@ def sync_scheduled_transactions_skript(setting_name, schedule_type):
         frappe.logger().info(f"Scheduled Skript {schedule_type} sync: {start_date} to {end_date}")
         
         # Sync
-        sync_skript_transactions(start_date, end_date, "Bank Integration Setting")
+        sync_skript_transactions( "Bank Integration Setting", start_date, end_date)
         
     except Exception as e:
         try:
