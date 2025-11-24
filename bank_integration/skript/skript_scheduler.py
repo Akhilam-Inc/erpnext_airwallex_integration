@@ -1,5 +1,5 @@
 import frappe
-from bank_integration.skript.skirpt_transaction import sync_scheduled_transactions_skript
+from bank_integration.skript.skript_transaction import sync_scheduled_transactions_skript
 
 
 def run_hourly_skript_sync():

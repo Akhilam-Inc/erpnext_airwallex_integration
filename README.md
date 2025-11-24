@@ -69,74 +69,19 @@ For detailed setup instructions, see the [Configuration Guide](doc/02-configurat
 
 ## Documentation
 
-Complete documentation is available in the [`doc/`](doc/) directory:
+Complete user documentation is available in the [`doc/`](doc/) directory:
 
 ### Getting Started
-- **[Overview](doc/01-overview.md)** - Introduction and key features
-- **[Configuration Guide](doc/02-configuration.md)** - Detailed setup instructions
+- **[Overview](doc/01-overview.md)** – Introduction and key features  
+- **[Configuration Guide](doc/02-configuration.md)** – Step-by-step setup instructions
 
-### Workflow Documentation
-- **[Scheduled Sync Workflow](doc/03-scheduled-sync-workflow.md)** - Automatic periodic syncing
-- **[Manual Sync Workflow](doc/04-manual-sync-workflow.md)** - Historical data sync
-- **[Common Sync Process](doc/08-common-sync-process.md)** - Core sync logic
-
-### Technical Details
-- **[Authentication & Token Management](doc/05-authentication.md)** - Token caching and security
-- **[Data Mapping](doc/06-data-mapping.md)** - Field transformations
-- **[Error Handling & Recovery](doc/07-error-handling.md)** - Troubleshooting guide
+### Workflow Guides
+- **[Scheduled Sync Workflow](doc/03-scheduled-sync-workflow.md)** – How automatic syncing works  
+- **[Manual Sync Workflow](doc/04-manual-sync-workflow.md)** – How to sync historical transactions  
+- **[Common Sync Process](doc/08-common-sync-process.md)** – Understanding the overall sync flow
 
 📖 **Start here**: [doc/README.md](doc/README.md)
 
-## Architecture
-
-### Core Components
-
-1. **Bank Integration Setting** - Global configuration and multi-client management
-2. **Scheduler** - Cron-triggered sync functions for scheduled operations
-3. **Transaction Sync** - Main orchestration and client-specific processing
-4. **API Layer** - Base API client with authentication and token management
-5. **Data Mapping** - Airwallex to ERPNext field transformation
-
-### Code Structure
-
-```
-bank_integration/
-├── airwallex/                          # Airwallex integration logic
-│   ├── api/                           # API client layer
-│   │   ├── base_api.py               # Base API client
-│   │   ├── airwallex_authenticator.py # Authentication
-│   │   └── financial_transactions.py  # Transactions API
-│   ├── scheduler.py                   # Cron job functions
-│   ├── transaction.py                 # Sync orchestration
-│   └── utils.py                       # Data mapping utilities
-├── bank_integration/                   # Main module
-│   └── doctype/                       # DocTypes
-│       ├── bank_integration_setting/  # Settings DocType
-│       ├── bank_integration_log/      # Log DocType
-│       └── airwallex_client/          # Client child table
-└── fixtures/                          # Custom field definitions
-```
-
-## Key Concepts
-
-### Sync Types
-
-**Scheduled Sync**:
-- Automatic, incremental, triggered by cron
-- Date range calculated from last sync date
-- Runs in background without user intervention
-
-**Manual Sync**:
-- User-initiated, specific date range
-- Background job with real-time progress
-- Useful for historical data import
-
-### Authentication
-
-- Database-cached tokens with automatic refresh
-- Multi-client support with individual credentials
-- Automatic retry on authentication failures (401)
-- 5-minute buffer before token expiry
 
 ### Data Mapping
 
@@ -155,38 +100,6 @@ bank_integration/
 | Completed with Errors | Sync finished but some transactions had errors |
 | Failed | Sync failed completely |
 
-## API Reference
-
-### Main Functions
-
-#### `sync_transactions(from_date, to_date, setting_name)`
-Main sync orchestrator that processes all configured clients.
-
-**Parameters:**
-- `from_date` (str/datetime): Start date for transaction sync
-- `to_date` (str/datetime): End date for transaction sync
-- `setting_name` (str): Name of Bank Integration Setting document
-
-#### `sync_client_transactions(client, from_date_iso, to_date_iso, settings)`
-Syncs transactions for a specific Airwallex client.
-
-**Parameters:**
-- `client` (AirwallexClient): Client configuration object
-- `from_date_iso` (str): ISO8601 formatted start date
-- `to_date_iso` (str): ISO8601 formatted end date
-- `settings` (BankIntegrationSetting): Settings document
-
-#### `map_airwallex_to_erpnext(txn, bank_account)`
-Maps Airwallex transaction to ERPNext Bank Transaction format.
-
-**Parameters:**
-- `txn` (dict): Airwallex transaction payload
-- `bank_account` (str): ERPNext Bank Account name
-
-**Returns:**
-- `dict`: ERPNext Bank Transaction document dictionary
-
-For detailed API documentation, see [Data Mapping](doc/06-data-mapping.md).
 
 ## Troubleshooting
 
@@ -215,39 +128,6 @@ For detailed API documentation, see [Data Mapping](doc/06-data-mapping.md).
 
 For comprehensive troubleshooting, see [Error Handling & Recovery](doc/07-error-handling.md).
 
-## Development
-
-### Contributing
-
-This app uses `pre-commit` for code formatting and linting. Please [install pre-commit](https://pre-commit.com/#installation) and enable it for this repository:
-
-```bash
-cd apps/bank_integration
-pre-commit install
-```
-
-Pre-commit is configured to use the following tools:
-- **ruff** - Python linting and formatting
-- **eslint** - JavaScript linting
-- **prettier** - Code formatting
-- **pyupgrade** - Python syntax modernization
-
-### Running Tests
-
-```bash
-# Run all tests
-bench --site your-site run-tests --app bank_integration
-
-# Run specific test file
-bench --site your-site run-tests --app bank_integration --module bank_integration.tests.test_transaction
-```
-
-### CI/CD
-
-This app uses GitHub Actions for continuous integration:
-
-- **CI**: Installs this app and runs unit tests on every push to `develop` branch
-- **Linters**: Runs [Frappe Semgrep Rules](https://github.com/frappe/semgrep-rules) and [pip-audit](https://pypi.org/project/pip-audit/) on every pull request
 
 ## Support
 

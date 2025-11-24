@@ -304,12 +304,12 @@ class BankIntegrationSetting(Document):
     @frappe.whitelist()
     def start_transaction_sync(self):
         """Start background job for syncing transactions"""
-        if not self.skript_last_sync_date or not self.to_date:
-            frappe.throw("Last sync date is required for syncing old transactions")
+        if not self.from_date or not self.to_date:  # Changed from self.from to self.from_date
+            frappe.throw("From and To dates are required for syncing old transactions")
 
-        # # Validate date range
-        # if self.from_date > self.to_date:
-        #     frappe.throw("From date cannot be greater than To date")
+        # Validate date range
+        if self.from_date > self.to_date:
+            frappe.throw("From date cannot be greater than To date")
 
         # Update status to indicate sync has started
         self.db_set('sync_status', 'In Progress')
@@ -317,16 +317,14 @@ class BankIntegrationSetting(Document):
         self.db_set('processed_records', 0)
         self.db_set('total_records', 0)
         self.db_set('sync_progress', 0)
-        start_date = frappe.utils.get_datetime(self.skript_last_sync_date)
-        to_date = frappe.utils.now_datetime()
         
         # Enqueue the sync job
         enqueue(
             'bank_integration.airwallex.transaction.sync_transactions',
             queue='long',
             timeout=3600,  # 1 hour timeout
-            from_date=str(start),
-            to_date=str(to_date),
+            from_date=str(self.from_date),
+            to_date=str(self.to_date),
             setting_name=self.name
         )
 
@@ -585,11 +583,11 @@ class BankIntegrationSetting(Document):
                 title="Unmapped Accounts"
             )
         
-        if not self.skript_last_sync_date:
-            frappe.throw("Last sync dates is required for syncing transactions")
-        
+        if not self.skript_from_date or not self.skript_to_date:  # Changed from self.from to self.from_date
+            frappe.throw("Skript From and To dates are required for syncing old transactions")
+
         # Validate date range
-        if self.from_date > self.to_date:
+        if self.skript_from_date > self.skript_to_date:
             frappe.throw("From date cannot be greater than To date")
         
         # Update Skript sync status
@@ -602,51 +600,13 @@ class BankIntegrationSetting(Document):
         
         # Enqueue the sync job
         from frappe.utils.background_jobs import enqueue
-        start_date = frappe.utils.get_datetime(self.skript_last_sync_date)
-        to_date = frappe.utils.now_datetime()
-        enqueue(
-            'bank_integration.skript.transaction.sync_skript_transactions',
-            queue='long',
-            timeout=3600,
-            setting_name=self.name,
-            from_date=str(start_date),
-            to_date=str(to_date),
-        )
-        
-        frappe.msgprint(
-            "Skript transaction sync job has been started. You can monitor the progress from this page.",
-            indicator="blue",
-            alert=False
-        )
-
-    @frappe.whitelist()
-    def start_skript_transaction_sync(self):
-        """Start background job for syncing Skript transactions"""
-        if not self.skript_last_sync_date:
-            frappe.throw("Last sync date is required for syncing transactions")
-        
-        # # Validate date range
-        # if self.from_date > self.to_date:
-        #     frappe.throw("From date cannot be greater than To date")
-        
-        # Update status to indicate sync has started
-        self.db_set('sync_status', 'In Progress')
-        self.db_set('last_sync_date', frappe.utils.now())
-        self.db_set('processed_records', 0)
-        self.db_set('total_records', 0)
-        self.db_set('sync_progress', 0)
-        
-        # Enqueue the sync job
-        from frappe.utils.background_jobs import enqueue
-        start_date = frappe.utils.get_datetime(self.skript_last_sync_date)
-        to_date = frappe.utils.now_datetime()
         enqueue(
             'bank_integration.skript.skript_transaction.sync_skript_transactions',
             queue='long',
-            timeout=3600,  # 1 hour timeout
+            timeout=3600,
             setting_name=self.name,
-            from_date=str(start_date),
-            to_date=str(to_date)
+            from_date=str(self.skript_from_date),
+            to_date=str(self.skript_to_date),
         )
         
         frappe.msgprint(

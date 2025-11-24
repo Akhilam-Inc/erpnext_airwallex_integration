@@ -164,56 +164,61 @@ frappe.ui.form.on('Bank Integration Setting', {
                 });
             }, __('Skript'));
 
-            // Start Sync
-            frm.add_custom_button(__('Start Sync'), function () {
-                if (!frm.doc.from_date || !frm.doc.to_date) {
-                    frappe.msgprint(__('Please set From and To dates'));
-                    return;
-                }
-                frm.call('validate_skript_account_mapping').then(r => {
-                    if (r.message) {
-                        // Has unmapped accounts
-                        let account_list = r.message.map(acc =>
-                            `• ${acc.display_name} (${acc.masked_number || acc.account_id})`
-                        ).join('<br>');
+            if (frm.doc.skript_sync_status &&
+                ['Completed', 'Not Started'].includes(frm.doc.skript_sync_status)) {
+                // Start Sync
+                frm.add_custom_button(__('Start Sync'), function () {
+                    if (!frm.doc.skript_from_date || !frm.doc.skript_to_date) {
+                        frappe.msgprint(__('Please set From and To dates'));
+                        return;
+                    }
+                    frm.call('validate_skript_account_mapping').then(r => {
+                        if (r.message) {
+                            // Has unmapped accounts
+                            let account_list = r.message.map(acc =>
+                                `• ${acc.display_name} (${acc.masked_number || acc.account_id})`
+                            ).join('<br>');
 
-                        frappe.msgprint({
-                            title: __('Unmapped Accounts'),
-                            indicator: 'red',
-                            message: `<b>The following accounts are not mapped:</b><br><br>${account_list}<br><br>Please map them to ERPNext Bank Accounts.`
-                        });
-                    } else {
-                        if (!frm.doc.skript_from_date || !frm.doc.skript_to_date) {
-                            frappe.msgprint(__('Please set Skript From and To dates'));
-                            return;
-                        }
-                           // Will validate mapping and show error if unmapped accounts exist
+                            frappe.msgprint({
+                                title: __('Unmapped Accounts'),
+                                indicator: 'red',
+                                message: `<b>The following accounts are not mapped:</b><br><br>${account_list}<br><br>Please map them to ERPNext Bank Accounts.`
+                            });
+                        } else {
+                            if (!frm.doc.skript_from_date || !frm.doc.skript_to_date) {
+                                frappe.msgprint(__('Please set Skript From and To dates'));
+                                return;
+                            }
+                            // Will validate mapping and show error if unmapped accounts exist
                             frm.call('start_skript_transaction_sync');
-                    }
-                });
-             
-            }, __('Skript'));
+                        }
+                    });
+
+                }, __('Skript'));
+            }
+
+            // Restart Sync (only show if sync failed or stopped)
+            if (frm.doc.skript_sync_status &&
+                ['Failed', 'Stopped', 'Completed with Errors'].includes(frm.doc.skript_sync_status)) {
+                frm.add_custom_button(__('Restart Sync'), function () {
+                    frm.call('restart_skript_transaction_sync');
+                }, __('Skript'));
+            }
+
+            // Stop Sync (only show if in progress)
+            if (frm.doc.skript_sync_status === 'In Progress') {
+                frm.add_custom_button(__('Stop Sync'), function () {
+                    frappe.confirm(
+                        'Are you sure you want to stop the current sync?',
+                        function () {
+                            frm.call('stop_skript_transaction_sync');
+                        }
+                    );
+                }, __('Skript'));
+            }
         }
 
-        // Restart Sync (only show if sync failed or stopped)
-        if (frm.doc.skript_sync_status && 
-            ['Failed', 'Stopped', 'Completed with Errors'].includes(frm.doc.skript_sync_status)) {
-            frm.add_custom_button(__('Restart Sync'), function() {
-                frm.call('restart_skript_transaction_sync');
-            }, __('Skript'));
-        }
 
-        // Stop Sync (only show if in progress)
-        if (frm.doc.skript_sync_status === 'In Progress') {
-            frm.add_custom_button(__('Stop Sync'), function() {
-                frappe.confirm(
-                    'Are you sure you want to stop the current sync?',
-                    function() {
-                        frm.call('stop_skript_transaction_sync');
-                    }
-                );
-            }, __('Skript'));
-        }
 
     },
     enable_airwallex: function (frm) {
