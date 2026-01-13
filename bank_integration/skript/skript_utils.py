@@ -1,5 +1,6 @@
 import frappe
-from datetime import datetime
+import pytz
+from datetime import datetime, timedelta
 
 
 def map_skript_to_erpnext(skript_txn, bank_account):
@@ -71,5 +72,15 @@ def format_datetime_for_skript_filter(dt):
     if isinstance(dt, str):
         dt = frappe.utils.get_datetime(dt)
     
-    # Return in format: YYYY-MM-DD HH:MM:SS (no timezone)
-    return dt.strftime('%Y-%m-%d %H:%M:%S')
+    system_tz = pytz.timezone(frappe.utils.get_system_timezone())
+    # 1. If naive (no timezone), localize to System Timezone
+    if dt.tzinfo is None:
+        local_dt = system_tz.localize(dt)
+    else:
+        local_dt = dt
+    
+    # 2. Convert to UTC
+    utc_dt = local_dt.astimezone(pytz.UTC)
+    
+    # 3. Format strictly for Skript API: YYYY-MM-DD HH:MM:SS
+    return utc_dt.strftime('%Y-%m-%d %H:%M:%S')

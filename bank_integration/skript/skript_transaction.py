@@ -139,9 +139,14 @@ def sync_scheduled_transactions_skript(setting_name, schedule_type):
         setting = frappe.get_single("Bank Integration Setting")
         
         # Check if sync is already in progress
-        if setting.skript_sync_status == "In Progress":  # ← Changed
-            frappe.logger().info(f"Skript sync already in progress")
-            return
+        if setting.skript_sync_status == "In Progress":
+            # Safety check: if stuck in progress for > 1 hour, reset it
+            if setting.modified and (frappe.utils.now_datetime() - frappe.utils.get_datetime(setting.modified)).total_seconds() > 3600:
+                 frappe.logger().info("Resetting stuck Skript sync status")
+                 setting.db_set('skript_sync_status', 'Not Started')  # ← Changed
+            else:
+                 frappe.logger().info(f"Skript sync already in progress")
+                 return
         
         if not setting.enable_skript:
             frappe.logger().info("Skript integration disabled")
@@ -158,7 +163,7 @@ def sync_scheduled_transactions_skript(setting_name, schedule_type):
         end_date = frappe.utils.now_datetime()
         
         if setting.skript_last_sync_date:  # ← Changed
-            start_date = frappe.utils.get_datetime(setting.skript_last_sync_date)
+            start_date = frappe.utils.get_datetime(setting.skript_last_sync_date) - timedelta(minutes=1)
         else:
             if schedule_type == "Hourly":
                 start_date = end_date - timedelta(hours=2)

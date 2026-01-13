@@ -10,7 +10,7 @@ frappe.ui.form.on('Bank Integration Setting', {
             frm.doc.from_date &&  // Changed from frm.doc.from
             frm.doc.to_date && frm.doc.enable_airwallex == 1) {    // Changed from frm.doc.to
 
-            frm.add_custom_button(__('Sync Old Transactions'), function () {
+            frm.add_custom_button(__('Sync Transactions Manually'), function () {
                 frappe.confirm(
                     'Are you sure you want to start syncing transactions from ' +
                     frappe.datetime.str_to_user(frm.doc.from_date) + ' to ' +  // Changed
@@ -27,7 +27,7 @@ frappe.ui.form.on('Bank Integration Setting', {
                         });
                     }
                 );
-            }, __('Actions'));
+            }, __('Airwallex'));
         }
 
         // Add restart sync button for failed or completed syncs
@@ -167,7 +167,7 @@ frappe.ui.form.on('Bank Integration Setting', {
             if (frm.doc.skript_sync_status &&
                 ['Completed', 'Not Started'].includes(frm.doc.skript_sync_status)) {
                 // Start Sync
-                frm.add_custom_button(__('Start Sync'), function () {
+                frm.add_custom_button(__('Sync Manually'), function () {
                     if (!frm.doc.skript_from_date || !frm.doc.skript_to_date) {
                         frappe.msgprint(__('Please set From and To dates'));
                         return;
