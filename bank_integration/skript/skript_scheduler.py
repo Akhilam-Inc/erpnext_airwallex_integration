@@ -112,7 +112,6 @@ def complete_skript_sync():
 
         # Mark Skript sync as completed (only once)
         setting.skript_sync_status = "Completed"
-        setting.skript_last_sync_date = frappe.utils.now()
         setting.save(ignore_permissions=True)
 
         frappe.db.commit()
