@@ -164,7 +164,12 @@ scheduler_events = {
     "monthly": [
         "bank_integration.airwallex.scheduler.run_monthly_sync",
         "bank_integration.skript.skript_scheduler.run_monthly_skript_sync"
-    ]
+    ],
+    "cron":{
+        "0 23 * * *":[
+            "bank_integration.skript.skript_scheduler.complete_skript_sync"
+        ],
+    }
 }
 
 # Testing
