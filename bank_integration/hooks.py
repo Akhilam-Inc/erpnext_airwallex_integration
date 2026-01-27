@@ -149,7 +149,7 @@ app_license = "mit"
 # ---------------
 
 scheduler_events = {
-    "hourly": [
+    "hourly_long": [
         "bank_integration.airwallex.scheduler.run_hourly_sync",
         "bank_integration.skript.skript_scheduler.run_hourly_skript_sync"
     ],
