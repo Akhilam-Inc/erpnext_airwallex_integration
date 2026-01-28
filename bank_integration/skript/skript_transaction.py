@@ -178,15 +178,15 @@ def sync_skript_transactions(setting_name, from_date=None, to_date=None):
         
         # Determine the initial start time for the sync loop
         # Priority: 1. DB Last Sync, 2. Manual from_date, 3. Default (30 days ago)
-        current_watermark = None
+        current_cursor = None
         
         if settings.skript_last_sync_date:
-            current_watermark = frappe.utils.get_datetime(from_date)
+            current_cursor = frappe.utils.get_datetime(from_date)
         elif from_date:
-            current_watermark = frappe.utils.get_datetime(from_date)
+            current_cursor = frappe.utils.get_datetime(from_date)
         else:
             # Fallback: If never synced, look back 30 days
-            current_watermark = frappe.utils.add_days(frappe.utils.now(), -30)
+            current_cursor = frappe.utils.add_days(frappe.utils.now(), -30)
 
         loop_count = 0
         MAX_LOOPS = 100  # Safety break to prevent infinite loops
@@ -199,7 +199,7 @@ def sync_skript_transactions(setting_name, from_date=None, to_date=None):
                 break
 
             # Format the filter date
-            filter_date_str = format_datetime_for_skript_filter(current_watermark)
+            filter_date_str = format_datetime_for_skript_filter(current_cursor)
             
             # Construct Filter: postingDateTime > Last Sync
             filter_expr = f"postingDateTime > {{ts '{filter_date_str}'}}"
@@ -265,9 +265,9 @@ def sync_skript_transactions(setting_name, from_date=None, to_date=None):
             
             # --- 4. Update Watermark & Save Progress ---
             # If we found a newer date in this batch, update settings immediately
-            if batch_max_date and batch_max_date > current_watermark:
-                current_watermark = batch_max_date
-                settings.db_set('skript_last_sync_date', current_watermark.strftime("%Y-%m-%d %H:%M:%S"))
+            if batch_max_date and batch_max_date > current_cursor:
+                current_cursor = batch_max_date
+                settings.db_set('skript_last_sync_date', current_cursor.strftime("%Y-%m-%d %H:%M:%S"))
                 settings.save()
                 frappe.db.commit() # Commit explicitly to save progress
             # Update Progress Bar (optional)
