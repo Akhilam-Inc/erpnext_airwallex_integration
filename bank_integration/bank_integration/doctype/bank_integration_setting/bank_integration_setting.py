@@ -592,7 +592,7 @@ class BankIntegrationSetting(Document):
         
         # Update Skript sync status
         self.db_set('skript_sync_status', 'In Progress')
-        self.db_set('skript_last_sync_date', frappe.utils.now())
+        # self.db_set('skript_last_sync_date', frappe.utils.now())
         self.db_set('skript_processed_records', 0)
         self.db_set('skript_total_records', 0)
         self.db_set('skript_sync_progress', 0)
@@ -676,21 +676,25 @@ class BankIntegrationSetting(Document):
                 "Skript Auth Test"
             )
             return False
-    def update_skript_sync_progress(self, processed, total, status="In Progress"):
+    def update_skript_sync_progress(self, processed, total, status="In Progress" , update_last_sync_date=True):
         """Update Skript sync progress without triggering modified timestamp"""
         progress = (processed / total * 100) if total > 0 else 0
-        
-        # Use db_set to avoid document modified conflicts
-        frappe.db.set_value(
-            "Bank Integration Setting",
-            self.name,
-            {
+        update_data = {
                 "skript_processed_records": processed,
                 "skript_total_records": total,
                 "skript_sync_progress": progress,
                 "skript_sync_status": status,
+            }
+        if update_last_sync_date:
+            update_data = {
+                **update_data,
                 "skript_last_sync_date": frappe.utils.now()
-            },
+            }
+        # Use db_set to avoid document modified conflicts
+        frappe.db.set_value(
+            "Bank Integration Setting",
+            self.name,
+            update_data,
             update_modified=False
         )
         

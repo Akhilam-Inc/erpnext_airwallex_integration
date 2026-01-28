@@ -59,6 +59,35 @@ def parse_skript_date(date_string):
         )
         return frappe.utils.now()
 
+def parse_skript_to_system_timezone(date_string):
+    """
+    Convert Skript datetime (with timezone) to ERPNext system timezone.
+    
+    - Input: '2026-01-23T07:10:04+11:00'
+    - Output: timezone-aware datetime converted into system timezone
+    """
+    if not date_string:
+        return frappe.utils.now_datetime()
+
+    try:
+        # Parse Skript ISO8601 datetime WITH original timezone
+        dt_with_tz = datetime.fromisoformat(date_string)
+
+        # Get ERPNext system timezone dynamically
+        system_tz = pytz.timezone(frappe.utils.get_system_timezone())
+
+        # Convert Skript datetime → ERPNext system timezone
+        system_dt = dt_with_tz.astimezone(system_tz)
+
+        return system_dt.replace(tzinfo=None)
+
+    except Exception as e:
+        frappe.log_error(
+            f"parse_skript_to_system_timezone error for '{date_string}': {str(e)}",
+            "Skript Date Parse"
+        )
+        return frappe.utils.now_datetime()
+
 def format_datetime_for_skript_filter(dt):
     """
     Format datetime for Skript SQL-like filter
